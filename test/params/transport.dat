@@ -1,0 +1,71 @@
+[LungsGas] 
+fio2 = 0.210379; // %
+fico2 = 0.000421;   // %
+k = 1.2103;   // -
+patm = 760.;   // mmHg
+pws = 47.;   // mmHg
+csato2 = 0.20448; //0.0227*9.  // mmol/l
+csatco2 = 1.9564192;  //0.0227*86.11  // mmol/l
+h1 = 0.3836;  // -
+h2 = 1.819;  // -
+alpha1 = 0.03198; // mmHg^-1
+alpha2 = 0.05591; // mmHg^-1
+beta1 = 0.008275; // mmHg^-1
+beta2 = 0.03255;  // mmHg^-1
+k1 = 14.99;  // mmHg
+k2 = 194.4;  // mmHg
+hgb = 0.15;  // g/ml
+kO2 = 2.28; 
+kCO2 = 65.6; 
+
+[TissuesVenousGas]
+vtep = 262.; // ml
+mo2ep = 14.683; // ml/min
+mco2ep = 12.3337; // ml/min
+vtsp = 2673.; // ml
+mo2sp = 108.419; // ml/min
+mco2sp = 91.0720; // ml/min
+vtmp = 31200.; // ml
+mo2mp = 51.6; // ml/min
+mco2mp = 43.344; // ml/min
+vthp = 284.; // ml
+mo2hp = 24.; // ml/min
+mco2hp = 20.16; // ml/min
+vtbp = 1300.; // ml
+mo2bp = 47.502; // ml/min
+mco2bp = 39.9017; // ml/min
+
+[DelayedGasParam]
+tault = 18.; //s
+tauvl = 10.; //s
+
+[initial_conditions]
+fdo2 = 0.18;
+fdco2 = 0.0281; 
+fAo2 = 0.146; 
+fAco2 = 0.0547;
+cppo2 = 0.1994;
+cppco2 = 0.4793;
+cepo2 = 0.19;
+cepco2 = 0.48;
+cspo2 = 0.12;
+cspco2 = 0.54;
+cmpo2 = 0.15;
+cmpco2 = 0.51;
+chpo2 = 0.15; 
+chpco2 = 0.55;
+cbpo2 = 0.13;
+cbpco2 = 0.53;
+cevo2 = 0.19;
+cevco2 = 0.48;
+csvo2 = 0.12;
+csvco2 = 0.54;
+cmvo2 = 0.15;
+cmvco2 = 0.51;
+chvo2 = 0.15; 
+chvco2 = 0.55;
+cbvo2 = 0.13;
+cbvco2 = 0.53;
+cvo2 = 0.151;
+cvco2 = 0.52;
+

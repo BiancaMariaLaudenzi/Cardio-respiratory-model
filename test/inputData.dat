@@ -1,0 +1,51 @@
+﻿//// Set the following parameters to run a new simulation:: ////
+
+[methods]
+method = 1;              // Numerical method:: 1 for Runge-Kutta order 4; 0 for Euler.
+
+[timeParams]
+tIni = 0.;              // Simulation initial time;
+tIniGas = 20.;          // Initial time for gas transport; 
+tIniControl = 3.        // Initial time for controls -> anyway the controls start after tIniGas;
+timeStop = 2000.;        // Simulation end time; 
+tSampleIni = 1940.;       // Sampling initial time;
+tSampleEnd = 2000.;      // Sampling final time;
+dtSample = 1e-2;        // Sampling time step;
+dt = 5e-5;              // Numerical method time step.
+
+// IMPORTANT NOTE: the activation of each system is sequential (cardiovascular system always activated -> doLung -> doGas -> doControl -> doControlResp).
+//                 For example, it is not possible to activate doGas and disactivate doLung.
+[systems]
+doLung = 1;             // 1 for activating lung mechanics system; 0 to disactivate;
+doGas = 1;              // 1 for activating gas transport system; 0 to disactivate;
+doControlCardio = 1;    // 1 for activating cardiovascular control system; 0 to disactivate;
+doControlResp = 1;      // 1 for activating ventilatory control system; 0 to disactivate;
+
+[folders]
+pathResults = ./test_results/baseline/    // path to save results.
+
+
+
+//// Leave the following parameters unchanged:: ////
+
+[cardioParams]
+cardioParams = params/cardiovascular.dat
+[lungParams]
+lungParams = params/lungMechanics.dat
+[gasParams]
+gasParams = params/transport.dat
+[controlCardioParams]
+controlCardioParams = params/cardiovascularControl.dat
+[controlRespParams]
+controlRespParams = params/respiratoryControl.dat
+[commonParams]
+commonParams = params/commonParams.dat
+
+[conversions]
+mmHgDyncm2 = 1333.22368;
+cmH2OmmHg = 0.73556;
+LmL = 1000.;
+
+[toSample]
+roundVal = 1e12;
+tol = 1e-8;

@@ -1,0 +1,26 @@
+[peripheral]
+Dp = 7.;
+Gpa = 1200.;
+Gpf = 0.8913;
+taupa1 = 83.;
+taupa2 = 10.;
+taupf1 = 174.78;
+taupf2 = 17.526;
+fapcn = 3.7;
+
+[central]
+Dc = 8.;
+Gca1 = 850.;  
+Gca2 = 0.;
+Gcf1 = 0.9;
+Gcf2 = 0.;
+tauca1 = 105.;
+tauca2 = 30.;
+taucf1 = 400.;
+taucf2 = 35.;
+
+[ics]
+DeltaPmusminp = 0.;
+DeltaPmusminc = 0.;
+DeltaRRp = 0.;
+DeltaRRc = 0.;

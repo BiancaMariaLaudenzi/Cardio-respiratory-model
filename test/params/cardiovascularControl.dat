@@ -1,0 +1,156 @@
+[basalHR]
+T0 = 0.50;
+
+[brainAutoParams]
+gbpn = 0.15; 
+gbo2 = 10.;
+cvbo2n = 0.14; //ml/ml
+Ab = 20.9;
+Bb = 92.8;
+Cb = 10570.;
+Db = -5.251;
+
+[coroAutoParams]
+gho2 = 35.;
+cvho2n = 0.11; //ml/ml
+khco2 = 11.11; //mmHg
+
+[muscleAutoParams]
+gmo2 = 30.;
+cvmo2n = 0.155; //ml/ml
+kmco2 = 142.8; //mmHg
+
+[commonAutoParams]
+tauo2A = 10.; //s
+tauco2A = 20.; //s 
+
+[baroAfferentParam]
+tauzB = 6.37; //s
+taupB = 2.076; //s
+fabmin = 2.52; //spikes/s
+fabmax = 47.78; //spikes/s
+pn = 92.; //mmHg
+kab = 11.76; //mmHg
+
+[chemoAfferentParam]
+Ac = 600.; // AA
+Bc = 10.18; // BB 
+kco2 = 1.; //1/s
+ko2 = 200.;
+kstat = 20.; //1/s
+kdyn = 45.; //1/s
+tauCAP = 3.5; //s
+tauccCO2dyn = 600.; //s
+
+[lsrAfferentParam]
+gap = 12.; //spiles/l/s
+tauLSR = 2.; //s taup
+
+[efferentSympParams]
+fesinf = 2.1; //spikes/s
+fes0 = 16.11; //spikes/s
+fesmax = 60.; //spikes/s
+kes = 0.0675; //s
+Wbsh = -1.75;
+Wbsp = -1.1375;
+Wbsv = -1.1375;
+Wcsh = 1.;
+Wcsp = 1.56;
+Wcsv = 1.56;
+Wpsh = 0.;
+Wpsp = -0.4250;
+Wpsv = -0.4250;
+
+[efferentVagalParams]
+fevinf = 6.3; //spikes/s
+fev0 = 3.2; //spikes/s
+fab0 = 25.; //spikes/s
+kev = 7.06; //spikes/s
+Wcv = 0.208; 
+Wpv = -0.103;
+thetav = -0.68; //spikes/s
+
+[CNShypoxixResponseParam]
+chish = 53.; //1/s
+chisp = 6.; //1/s
+chisv = 6.; //1/s
+Ptildeo2sh = 45.; //mmHg
+Ptildeo2sp = 30.; //mmHg
+Ptildeo2sv = 30.; //mmHg
+kiscsh = 6.; //mmHg
+kiscsp = 2.; //mmHg
+kiscsv = 2.; //mmHg
+tauisc = 30.; //s
+taucc = 20.; //s
+thetashn = 3.6; //1/s
+thetaspn = 13.32; //1/s
+thetasvn = 13.32; //1/s
+gccsh = 1.; //1/mmHg/s
+gccsp = 1.5; //1/mmHg/s
+gccsv = 0.; //1/mmHg/s
+
+[resistanceControlParams]
+Grmp = 2.47; //mmHg/ml
+Grsp = 0.695; //mmHg/ml
+Grep = 1.94; //mmHg/ml
+Drmp = 2.; //s
+Drsp = 2.; //s
+Drep = 2.; //s
+fesmin = 2.66; //spikes/s
+taurmp = 6.; //s
+taursp = 6.; //s
+taurep = 6.; //s
+
+[vuControlParams]
+Gvumv = -58.29; //ml/nu
+Gvusv = -265.4; //ml/nu
+Gvuev = -74.21; //ml/nu
+Dvumv = 5.; //s
+Dvusv = 5.; //s
+Dvuev = 5.; //s
+tauvumv = 20.; //s
+tauvusv = 20.; //s
+tauvuev = 20.; //s
+
+[heartControlParams]
+Gemaxlv = 0.475; //mmHg
+Gemaxrv = 0.282; //mmHg
+Demaxlv = 2.; //s
+Demaxrv = 2.; //s
+tauemaxlv = 8.; //s
+tauemaxrv = 8.; //s
+GTs = -0.13; //s/nu
+DTs = 2.; //s
+tauTs = 2.; //s
+GTv = 0.09; //s/nu
+DTv = 0.2; //s
+tauTv = 1.5; //s
+
+[ics]
+ptilde =  306.8401 ;
+phiapc =  0.;
+fap =  0.;
+deltathetao2sp =  0.;
+deltathetao2sv =  0.;
+deltathetao2sh =  0.;
+deltathetaco2sp =  0.;
+deltathetaco2sv =  0. ;
+deltathetaco2sh = 0.;
+deltarsp =  0.;
+deltarep =  0.;
+deltarmp =  0.;
+deltavusv =  0.;
+deltavuev =  0.;
+deltavumv =  0.;
+deltaemaxlv =  0.;
+deltaemaxrv =  0.;
+deltats =  0.;
+deltatv =  0.;
+xbo2 =  0.;
+xbco2 =  0.;
+xho2 =  0.;
+xmo2 =  0.;
+xhco2 =  0.;
+xmco2 =  0.;
+phiCO2dyn =  82.2871;
+fapc = 0.;

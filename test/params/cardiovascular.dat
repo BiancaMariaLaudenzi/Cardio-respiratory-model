@@ -1,0 +1,184 @@
+[compliances]
+csa = 0.196;
+csp = 0.686154; 
+cep = 0.641886; 
+cmp = 0.57288; 
+chp = 0.10416; 
+cbp = 0.36456; 
+csv = 42.777;
+cev = 14.0;
+cmv = 10.997;
+chv = 2.499;
+cbv = 7.497;
+cpa = 0.76;
+cpp = 5.8;
+cps = 0.0986;
+cpv = 25.37;
+
+[unstressed_volumes]
+vusa = 0.;
+vusp = 274.4;
+vuep = 134.64;
+vump = 105.8;
+vuhp = 24.0;
+vubp = 72.13;
+vuhv = 98.21;
+vubv = 294.64;
+vupa = 0.;
+vupp = 108.24;
+vupv = 105.6;
+
+
+[resistances]
+rsv = 0.038;
+rev = 0.04;
+rmv = 0.05;
+rhv = 0.224;
+rbv = 0.075;
+rpp = 0.0894;
+rps = 5.2588;
+rpv = 0.0056;
+Rpp = 0.0001;
+Rps = 0.1;
+Rp = 0.001;
+
+
+[thoracicVeins]
+tvd1 = 0.3855; \\ mmHg
+tvk1 = 0.15; \\ mmHg/ml
+tvkr = 0.001; \\ mmHg s / ml
+tvvmax = 350.; \\ ml
+tvvu = 130.; \\ ml
+tvr0 = 0.025; \\ mmHg s / ml
+tvd2 = -5.; \\ mmHg
+tvk2 = 0.4; \\ mmHg
+tvvmin = 50.; \\ ml
+tvkxp = 2.; \\ mmHg
+tvkxv = 8.; \\ ml
+tvvmin = 50.;
+
+
+[atria]
+cla = 19.23;
+cra = 31.25;
+vula = 22; 
+vura = 22;
+rla = 0.0025;
+rra = 0.0025;
+
+trRA = 0.97;
+TrpRA = 0.17;
+tcRA = 0.80;
+TcpRA = 0.17;
+eARA = 0.06;
+eBRA = 0.04;
+
+trRV = 0.30;
+TrpRV = 0.30;
+tcRV = 0.;
+TcpRV = 0.30;
+eARV = 0.55;
+eBRV = 0.03;
+
+trLA = 0.97;
+TrpLA = 0.17;
+tcLA = 0.80;
+TcpLA = 0.17;
+eALA = 0.07;
+eBLA = 0.05;
+
+trLV = 0.30;
+TrpLV = 0.;
+tcLV = 0.15;
+TcpLV = 0.30;
+eALV = 2.40;
+eBLV = 0.04;
+
+s = 0.0005;
+
+
+[ventricles]
+p0lv = 1.5;
+p0rv = 1.5;
+kelv = 0.014;
+kerv = 0.011;
+vulv = 14.7576 ;
+vurv = 35.9040 ;
+krlv = 0.000375;
+krrv = 0.0014 ;
+
+
+[valve]
+ATV = 4.96;
+lTV = 1.;
+deltap_openTV = 0.;
+deltap_closeTV = 0.;
+k_openTV = 40.;
+k_closeTV = 53.30;
+
+APV = 5.18;
+lPV = 1.50;
+deltap_openPV = 0.;
+deltap_closePV = 0.;
+k_openPV = 26.70;
+k_closePV = 26.70;
+
+AMV = 8.60;
+lMV = 1.;
+deltap_openMV = 0.;
+deltap_closeMV = 0.;
+k_openMV = 26.;
+k_closeMV = 53.3;
+
+AAV = 4.05;
+lAV = 1.;
+deltap_openAV = 0.;
+deltap_closeAV = 0.;
+k_openAV = 15. ;
+k_closeAV = 15.;
+
+rpprox = 0.001;
+rsprox = 0.005;
+
+[param]
+sh = 1.7;
+rho =  1.04; 
+T = 0.8333;
+tsys0 = 0.5;
+ksys = 0.075;
+
+[initial_conditions]
+vsa = 28. ;
+vep = 237. ;
+vsp = 383.954;
+vmp = 183.548;
+vhp = 38.136;
+vbp = 121.606;
+
+vev = 752.73;
+vsv = 1777.616;
+vmv = 591.236;
+vhv = 118.202 ;
+vbv = 354.616 ;
+vtv = 130.;
+
+vpa =  9.5;
+vpp =  160.56322 ;
+vpv =  0; 
+vps =  0.0159239;
+
+vla =  27. ;
+vlv =  135.;
+epsilon  =  0. ;
+vra =  40. ;
+vrv =  180. ;
+
+qTV =  0. ;
+xiTV =  0. ;
+qPV =  0. ;
+xiPV =  0. ;
+qMV =  0. ;
+xiMV =  0. ;
+qAV =  0. ;
+xiAV =  0.;
+

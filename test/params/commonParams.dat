@@ -1,0 +1,26 @@
+[cardiovascularControl]
+vusv0 = 1435.4;
+vuev0 = 640.73;
+vumv0 = 503.26;
+rsp0 = 1.8675; 
+rep0 = 1.24125; 
+rmp0 = 2.106;
+rhp0 = 19.71;
+rbp0 = 6.6667;
+emaxlv0 = 2.3920 ;
+emaxrv0 = 1.412 ;
+
+[cardiorespiratoryControl]
+paco2n = 40.; //mmHg
+caco2n = 0.36;
+
+
+[lungMechanics]
+pmusmin = -5. ; // cm/H2O
+rr = 12. ;
+
+[shunt]
+sh = 1.7; // %
+
+[pleuralPressure]
+pl = -5.; // cm/H2O
