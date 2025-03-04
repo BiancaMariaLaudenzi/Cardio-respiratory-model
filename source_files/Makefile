@@ -18,7 +18,11 @@
 # Compiler
 CPP=g++
 # Optimization flags
+<<<<<<< HEAD
 CPPFLAGS= -O3 
+=======
+CPPFLAGS= -Ofast #-ffast-math #-march=native -freorder-blocks-and-partition -floop-interchange -floop-strip-mine -floop-block  -ftree-loop-if-convert -ftree-loop-if-convert-stores -ftree-loop-distribution -ftree-vectorize -fno-exceptions -fno-rtti
+>>>>>>> origin/main
 
 # GIT
 GIT_VERSION := $(shell git describe --dirty --always --tags)

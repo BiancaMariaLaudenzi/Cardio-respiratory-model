@@ -15,8 +15,13 @@ beta2 = 0.03255;  // mmHg^-1
 k1 = 14.99;  // mmHg
 k2 = 194.4;  // mmHg
 hgb = 0.15;  // g/ml
+<<<<<<< HEAD
 kO2 = 2.28; 
 kCO2 = 65.6; 
+=======
+kO2 = 2.28; // to enforce pressure drop between PAO2 and PaO2 as in Albanese et al (disregarding contribution of shunt flow ...)
+kCO2 = 65.6; // to enforce pressure drop between PACO2 and PaCO2 as in Albanese et al (disregarding contribution of shunt flow ...)
+>>>>>>> origin/main
 
 [TissuesVenousGas]
 vtep = 262.; // ml

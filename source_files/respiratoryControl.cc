@@ -195,4 +195,7 @@ void respiratoryControl::output(){
     sampleAlgVars.flush();
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main

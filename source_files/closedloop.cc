@@ -35,6 +35,10 @@ using namespace std;
 using std::scientific;
 
 void closedloop::init(string ifile, int verbose) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
 	// verbose of each system
 	CVS.verbose = 0;
 	lungs.verbose = 0;
@@ -75,6 +79,10 @@ void closedloop::init(string ifile, int verbose) {
 		cout << "Done reading closedloop params. " << endl;
 	}
 		
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
 	// [initialize time]
 	time = tIni;
 	CVS.time = tIni;
@@ -479,7 +487,11 @@ vector<double> closedloop::setStateFromVariables(){
 				lungVolList.push_back(lungs.v);
 				timeVolList.push_back(time);
 				vector<double> var1(0);
+<<<<<<< HEAD
 				for ( int i = 0 ; i<timeVolList.size();i++){
+=======
+				for ( int i; i<timeVolList.size();i++){
+>>>>>>> origin/main
 					if (timeVolList[i] >= time-lungs.T){
 						var1.push_back(lungVolList[i]);
 					}
@@ -750,5 +762,9 @@ double closedloop::interpolate(const deque<double>& xData, const deque<double>& 
     double xL = xData[index - 1], yL = yData[index - 1], xR = xData[index], yR = yData[index];
 
     return yL + ((x0 - xL) / (xR - xL)) * (yR - yL);
+<<<<<<< HEAD
 }
 
+=======
+}
+>>>>>>> origin/main

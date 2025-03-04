@@ -285,4 +285,8 @@ void lungMechanics::output() {
 			<< VAdot << " "
 			<< "\n";
 	sampleLungFlow.flush();	
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/main
