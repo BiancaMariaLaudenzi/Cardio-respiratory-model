@@ -42,13 +42,12 @@ Sources:
 ## How to run the code
 
 The directory "source_files" contains the files ".cc" and ".h" representing the different systems: the cardiovascular system (cardiovascular), the lungs mechanics system (lungMechanics), the gas exchange and transport system (transport), the cardiovascular control system (cardiovascularControl) and the ventilatory control system (respiratoryControl). 
-Inside the directory "test" there are the "param" and the "test_results" directories.
-The directory "params" contains the input parameters of the model divided for each system. Note that the file "commonParams.pot" contains the input parameters that are common to more than one system.
-Results will be saved in the directory "test_results". 
+
+The "test/params" directory contains the input parameters of the model divided for each system. Note that the file "commonParams.pot" contains the input parameters that are common to more than one system. Results will be saved in a subfolder of the "test" directory. 
 
 To run the code:
-- enter the directory "source_files" and run "make -f Makefile clean all";
-- exit the diretory "source_files", enter the "test" directory and run "make -f Makefile clean all";
+- enter the "source_files" directory and run "make -f Makefile clean all";
+- exit the "source_files" diretory, enter the "test" directory and run "make -f Makefile clean all";
 - define appropriate input data in "inputData.dat";
 - run "./cardiorespiratory.x inputData.dat".
 

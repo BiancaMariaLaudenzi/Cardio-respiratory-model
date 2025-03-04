@@ -22,7 +22,7 @@ doControlCardio = 1;    // 1 for activating cardiovascular control system; 0 to 
 doControlResp = 1;      // 1 for activating ventilatory control system; 0 to disactivate;
 
 [folders]
-pathResults = ./test_results/baseline/    // path to save results.
+pathResults = ./test_results/    // path to save results.
 
 
 
