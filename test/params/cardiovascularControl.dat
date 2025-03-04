@@ -1,15 +1,8 @@
 [basalHR]
-<<<<<<< HEAD
 T0 = 0.50;
 
 [brainAutoParams]
 gbpn = 0.15; 
-=======
-T0 = 0.58;
-
-[brainAutoParams]
-gbpn = 0.15; // ml/mmHg/s --> is it correct?
->>>>>>> origin/main
 gbo2 = 10.;
 cvbo2n = 0.14; //ml/ml
 Ab = 20.9;
@@ -160,8 +153,4 @@ xmo2 =  0.;
 xhco2 =  0.;
 xmco2 =  0.;
 phiCO2dyn =  82.2871;
-<<<<<<< HEAD
 fapc = 0.;
-=======
-fapc = 0.;
->>>>>>> origin/main

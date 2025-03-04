@@ -299,7 +299,6 @@ void gasTransport::getAlgebraicRelations() {
 
 	tie(AlveoliLungsAlg[3], AlveoliLungsAlg[4]) = invertedDissociation(stateVars[4], stateVars[5]); // pppo2,pppco2
 
-<<<<<<< HEAD
 	double denom = CommonVars[31] + CommonVars[32];
 	if (denom != 0) {
 		AlveoliLungsAlg[5] = max((CommonVars[31]*stateVars[4] + CommonVars[32]*TissueVenousGasAlg[2]) / denom, 0.); //A54 - cao2
@@ -309,10 +308,6 @@ void gasTransport::getAlgebraicRelations() {
 		AlveoliLungsAlg[6] = 0.;  
 	}
 
-=======
-	AlveoliLungsAlg[5] = max((CommonVars[31]*stateVars[4] + CommonVars[32]*TissueVenousGasAlg[2]) / (CommonVars[31] + CommonVars[32]), 0.); //A54 - cao2
-	AlveoliLungsAlg[6] = max((CommonVars[31]*stateVars[5] + CommonVars[32]*TissueVenousGasAlg[3]) / (CommonVars[31] + CommonVars[32]), 0.); //A55 - caco2
->>>>>>> origin/main
 
 	tie(AlveoliLungsAlg[7], AlveoliLungsAlg[8]) = invertedDissociation(AlveoliLungsAlg[5], AlveoliLungsAlg[6]); //pao2,paco2
 	
@@ -393,8 +388,4 @@ void gasTransport::output(){
 	}
 	sampleGAStissueVenousGasAlg << "\n";
 	sampleGAStissueVenousGasAlg.flush();
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main

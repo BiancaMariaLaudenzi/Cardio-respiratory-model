@@ -408,11 +408,7 @@ class cardiovascularControl
          */ 
         vector <double> algVarSVResponse = vector <double> (10);
 
-<<<<<<< HEAD
         vector <double> algVars = vector <double> (45);
-=======
-        vector <double> algVars;
->>>>>>> origin/main
         
         //-----------------------------------------------------------------------------------
         // Variables for and from other classes
@@ -481,7 +477,6 @@ class cardiovascularControl
         //-----------------------------------------------------------------------------------
 
         void init(string ifile, string ifileC, string outDir);
-<<<<<<< HEAD
         void readCardioControlParameters(string _file, string _fileC);
         void printCardioControlParameters();
         void InitialCond(string _file);
@@ -503,51 +498,6 @@ class cardiovascularControl
         void getTimeDerivative();
         void setStateVars();
         void setStateVarsVector();
-=======
-
-        void readCardioControlParameters(string _file, string _fileC);
-
-        void printCardioControlParameters();
-        
-        void InitialCond(string _file);
-
-        void getAlgebraicRelationsAuto();
-
-        void getAlgebraicRelationsBaro();
-
-        void getAlgebraicRelationsChemo();
-
-        void getAlgebraicRelationsLSR();
-
-        void getAlgebraicRelationsCNS();
-
-        void getAlgebraicRelationsFiring();
-
-        void getAlgebraicRelationsSVResponse();
-
-        void getAlgebraicRelationscontrolledVars();
-        
-        void getAlgebraicRelations();
-
-        void getTimeDerivativeAuto();
-
-        void getTimeDerivativeBaro();
-
-        void getTimeDerivativeChemo();
-
-        void getTimeDerivativeLSR();
-
-        void getTimeDerivativeCNS();
-
-        void getTimeDerivativeSVResponse();
-
-        void getTimeDerivative();
-
-        void setStateVars();
-
-        void setStateVarsVector();
-
->>>>>>> origin/main
         void output();
 
         ofstream sampleAlgVars;

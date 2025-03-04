@@ -2,13 +2,8 @@
 vusv0 = 1435.4;
 vuev0 = 640.73;
 vumv0 = 503.26;
-<<<<<<< HEAD
 rsp0 = 1.8675; 
 rep0 = 1.24125; 
-=======
-rsp0 = 1.8675; \\abbasso del 25% 2.49
-rep0 = 1.24125; \\abbasso del 25% 1.655
->>>>>>> origin/main
 rmp0 = 2.106;
 rhp0 = 19.71;
 rbp0 = 6.6667;
@@ -25,14 +20,7 @@ pmusmin = -5. ; // cm/H2O
 rr = 12. ;
 
 [shunt]
-<<<<<<< HEAD
 sh = 1.7; // %
 
 [pleuralPressure]
 pl = -5.; // cm/H2O
-=======
-sh = 1.7; 
-
-[pleuralPressure]
-pl = -5.; // cm/H2O
->>>>>>> origin/main

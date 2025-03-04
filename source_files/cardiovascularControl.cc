@@ -291,11 +291,8 @@ void cardiovascularControl::readCardioControlParameters(string _file, string _fi
 
     if (verbose)
 		printCardioControlParameters();
-<<<<<<< HEAD
     
     Vt=0.;
-=======
->>>>>>> origin/main
 }
 
 void cardiovascularControl::InitialCond(string _file){

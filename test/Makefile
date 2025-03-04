@@ -19,11 +19,7 @@
 # Compiler
 CPP=g++
 ## Optimization flags
-<<<<<<< HEAD
 CPPFLAGS= -O3 
-=======
-CPPFLAGS= -O3 #-ffast-math #-march=native -freorder-blocks-and-partition -floop-interchange -floop-strip-mine -floop-block  -ftree-loop-if-convert -ftree-loop-if-convert-stores -ftree-loop-distribution -ftree-vectorize -fno-exceptions -fno-rtti 
->>>>>>> origin/main
 
 # macros
 RM = rm -f
