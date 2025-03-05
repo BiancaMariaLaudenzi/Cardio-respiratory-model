@@ -45,10 +45,13 @@ The directory "source_files" contains the files ".cc" and ".h" representing the 
 
 The "test/params" directory contains the input parameters of the model divided for each system. Note that the file "commonParams.dat" contains the input parameters that are common to more than one system. Results will be saved in a subfolder of the "test" directory. 
 
+Please check that parameter files only use "LF" end-of-line characters. If end-of-line characters are "CRLF", parameters are not read correctly.
+
 To run the code:
 - enter the "source_files" directory and run "make -f Makefile clean all";
 - exit the "source_files" diretory, enter the "test" directory and run "make -f Makefile clean all";
 - define appropriate input data in "inputData.dat";
 - run "./cardiorespiratory.x inputData.dat".
+
 
 
