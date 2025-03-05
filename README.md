@@ -43,7 +43,7 @@ Sources:
 
 The directory "source_files" contains the files ".cc" and ".h" representing the different systems: the cardiovascular system (cardiovascular), the lungs mechanics system (lungMechanics), the gas exchange and transport system (transport), the cardiovascular control system (cardiovascularControl) and the ventilatory control system (respiratoryControl). 
 
-The "test/params" directory contains the input parameters of the model divided for each system. Note that the file "commonParams.pot" contains the input parameters that are common to more than one system. Results will be saved in a subfolder of the "test" directory. 
+The "test/params" directory contains the input parameters of the model divided for each system. Note that the file "commonParams.dat" contains the input parameters that are common to more than one system. Results will be saved in a subfolder of the "test" directory. 
 
 To run the code:
 - enter the "source_files" directory and run "make -f Makefile clean all";
