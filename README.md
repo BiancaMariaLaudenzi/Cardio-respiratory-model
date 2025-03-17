@@ -15,7 +15,7 @@ Sources:
 
 (0) * BM Laudenzi, A Cucino, S Lassola, E Balzani, LO Muller
     * Predicting in-hospital indicators from wearable-derived signals for cardiovascular and respiratory disease monitoring: an in silico study.
-    * Submitted for publication, March 2025
+    * Submitted for publication, March 2025. Preprint on medRxiv 2025.03.11.25323722.
 
 (1) * A Albanese, L Cheng, M Ursino & N. W. Chbat.
     * An integrated mathematical model of the human cardiopulmonary system: model development.
