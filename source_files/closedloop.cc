@@ -475,21 +475,24 @@ vector<double> closedloop::setStateFromVariables(){
 					controlCardio.varsTransport[7] = 0.;
 				}
 
-				// // tidal volume 
-				lungVolList.push_back(lungs.v);
-				timeVolList.push_back(time);
-				vector<double> var1(0);
-				for ( int i = 0 ; i<timeVolList.size();i++){
-					if (timeVolList[i] >= time-lungs.T){
-						var1.push_back(lungVolList[i]);
+				// tidal volume 
+				double tAux = (round(time / (dtSample))) * dtSample;
+				double tDiff = round(abs(tAux - time) * roundVal) / roundVal;
+				if (tDiff < tol) {
+					lungVolList.push_back(lungs.v);
+					timeVolList.push_back(time);
+					vector<double> var1(0);
+					for ( int i = 0 ; i<timeVolList.size();i++){
+						if (timeVolList[i] >= time-lungs.T){
+							var1.push_back(lungVolList[i]);
+						}
+					}
+					Vtidal = *max_element(var1.begin(),var1.end()) - *min_element(var1.begin(),var1.end());
+					if (time >= 2*lungs.T) {
+						lungVolList.pop_front();
+						timeVolList.pop_front();
 					}
 				}
-				Vtidal = max_element(var1.begin(),var1.end()) - min_element(var1.begin(),var1.end());
-				lungVolList.pop_front();
-				timeVolList.pop_front();
-
-
-
 				
 				i0 = CVS.stateVars.size() + lungs.vol.size()+gas.stateVars.size();
 				x0.insert(x0.begin()+i0, controlCardio.stateVars.begin(), controlCardio.stateVars.end());

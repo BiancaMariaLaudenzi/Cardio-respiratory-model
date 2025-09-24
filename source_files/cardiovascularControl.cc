@@ -52,9 +52,9 @@ void cardiovascularControl::init(string ifile, string ifileC, string outDir){
                     << "[2]: phib;" << " "
                     << "[3]: phih;" << " "
                     << "[4]: phim;" << " "
-                    << "[5]: rbp;" << " "
-                    << "[6]: rhp;" << " "
-                    << "[7]: rmp;" << " "
+                    << "[5]: rbpAuto;" << " "
+                    << "[6]: rhpAuto;" << " "
+                    << "[7]: rmpAuto;" << " "
                     << "[8]: fab;" << " "
                     << "[9]: Xo2;" << " "
                     << "[10]: phistat;" << " "
@@ -93,6 +93,7 @@ void cardiovascularControl::init(string ifile, string ifileC, string outDir){
                     << "[43]: T;" << " "
                     << "[44]: rbp;" << " "
                     << "[45]: rhp;" << " "
+                    << "[46]: Vtidal;" << " "
                     << "\n";
 
 
@@ -709,6 +710,7 @@ void cardiovascularControl::output(){
     for (int i = 0; i<algVars.size(); i++){
         sampleAlgVars << algVars[i] << " " ;
     }                
+    sampleAlgVars << Vt << " " ;
     sampleAlgVars << "\n";
     sampleAlgVars.flush();
 
