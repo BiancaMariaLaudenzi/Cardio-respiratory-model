@@ -174,6 +174,7 @@ class lungMechanics
     void getTimeConstants();
     void getPmus();
     void getAlgebraicRelations();
-    void getTimeDerivative();
+    vector<double> getTimeDerivative(vector<double> x);
     void output();
+    void getVariablesFromState(vector<double> x);
 }; 

@@ -118,11 +118,11 @@ class closedloop
     // methods
     void init(string ifile, int verbose);
     void readParams(string _file,  int verbose);
-    vector<double> getStateTimeDerivative(double time);
+    vector<double> getStateTimeDerivative(double time, vector<double> x);
     vector<double> setStateFromVariables();
-    void setVariablesFromState(double time, const vector<double>& x0);
-    void Euler(double dt, double time, const vector<double>& x0, function<vector<double>(double)> fun);
-    void RK4(double dt, double time, const vector<double>& x0, function<vector<double>(double)> fun);
+    void setVariablesFromState(double time, vector<double> x);
+    void Euler(double dt, double time, const vector<double> x0, function<vector<double>(double, vector<double>)> fun);
+    void RK4(double dt, double time, const vector<double> x0, function<vector<double>(double, vector<double>)> fun);
     void exchangeInfo();
     void timeLoop(int verbose);
     double interpolate(const deque<double>& xData, const deque<double>& yData, double x0, bool extrapolate);

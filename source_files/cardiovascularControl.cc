@@ -507,7 +507,7 @@ void cardiovascularControl::getAlgebraicRelationsSVResponse(){
 
 
 void cardiovascularControl::getAlgebraicRelationscontrolledVars(){
-    controlledVars[0] = stateVarSVResponse[0]*(1 + stateVarAuto[5] ) / (1. - coromuscleAutoParams[1] * stateVarAuto[4]) + algVarAuto[6]; // autoregulation has and impact as well
+    controlledVars[0] = stateVarSVResponse[0]*(1 + stateVarAuto[5] ) / (1. - coromuscleAutoParams[1] * stateVarAuto[4]) + algVarAuto[6]; // autoregulation has an impact as well
     
     for (int i = 1; i<8; i++){
         controlledVars[i] = stateVarSVResponse[i] + commonParams[i];
@@ -616,9 +616,10 @@ void cardiovascularControl::getAlgebraicRelations(){
 }
 
 
-void cardiovascularControl::getTimeDerivative(){
-        // get algebric relations
-        getAlgebraicRelations();
+vector<double> cardiovascularControl::getTimeDerivative(vector<double> x){
+        
+    getVariablesFromState(x);
+
         // get time derivatives
         getTimeDerivativeAuto();
         getTimeDerivativeBaro();
@@ -650,8 +651,17 @@ void cardiovascularControl::getTimeDerivative(){
             dvdt[count] = dstateVarSVResponse[i];
             count++;
         }
+
+    return dvdt;
 }
 
+void cardiovascularControl::getVariablesFromState(vector<double> x) {
+    for (int i = 0; i < stateVars.size(); i++) {
+        stateVars[i] = x[i];
+    }
+    setStateVars();
+    getAlgebraicRelations();
+}
 
 void cardiovascularControl::setStateVars(){
 

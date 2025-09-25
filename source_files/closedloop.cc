@@ -306,44 +306,44 @@ void closedloop::exchangeInfo(){
 	}
 }
 
-vector<double> closedloop::getStateTimeDerivative(double time){
+vector<double> closedloop::getStateTimeDerivative(double time, vector< double> x){
     vector<double> dxdt(nVars,0);
 
-	exchangeInfo();
+	setVariablesFromState(time, x);
 
-	CVS.getTimeDerivative();
 	int i0 = 0;
 	int i1 = CVS.stateVars.size();
+	vector<double> CVS_dvdt = CVS.getTimeDerivative(vector<double>(x.begin() + i0, x.begin() + i1));
 	for (int i =0; i <i1-i0;i++){
-		dxdt[i+i0]=CVS.dvdt[i];
+		dxdt[i+i0]=CVS_dvdt[i];
 	}
 	if (doLung){
-		lungs.getTimeDerivative();
 		i0 = CVS.stateVars.size();
 		i1 = i0 + lungs.vol.size();
+	vector<double> lungs_dvdt = lungs.getTimeDerivative(vector<double>(x.begin() + i0, x.begin() + i1));
 		for (int i =0; i <i1-i0;i++){
-			dxdt[i+i0]=lungs.dvdt[i];
+			dxdt[i+i0]=lungs_dvdt[i];
 		}
 		if (doGas && time > tIniGas) {
-			gas.getTimeDerivative();
 			i0 = CVS.stateVars.size() + lungs.vol.size();
 			i1 = i0 + gas.stateVars.size();
+			vector<double> gas_dvdt = gas.getTimeDerivative(vector<double>(x.begin() + i0, x.begin() + i1));
 			for (int i =0; i <i1-i0;i++){
-				dxdt[i+i0]=gas.dvdt[i];
+				dxdt[i+i0]=gas_dvdt[i];
 			}
 			if (doControlCardio && time > tIniControl){
-				controlCardio.getTimeDerivative();
 				i0 = CVS.stateVars.size() + lungs.vol.size()+ gas.stateVars.size();
 				i1 = i0 + controlCardio.stateVars.size();
+				vector<double> controlCardio_dvdt = controlCardio.getTimeDerivative(vector<double>(x.begin() + i0, x.begin() + i1));
 				for (int i =0; i <i1-i0;i++){
-					dxdt[i+i0]=controlCardio.dvdt[i];
+					dxdt[i+i0]=controlCardio_dvdt[i];
 				}
 				if (doControlResp && time > tIniControl){
-					controlResp.getTimeDerivative();
 					i0 = CVS.stateVars.size() + lungs.vol.size()+ gas.stateVars.size()+controlCardio.stateVars.size();
 					i1 = i0 + controlResp.stateVars.size();
+					vector<double> controlResp_dvdt = controlResp.getTimeDerivative(vector<double>(x.begin() + i0, x.begin() + i1));
 					for (int i =0; i <i1-i0;i++){
-						dxdt[i+i0]=controlResp.dvdt[i];
+						dxdt[i+i0]=controlResp_dvdt[i];
 					}
 				}
 			}
@@ -530,32 +530,26 @@ vector<double> closedloop::setStateFromVariables(){
 	return x0;
 }
 
-void closedloop::setVariablesFromState(double time, const vector<double>& x0){
+void closedloop::setVariablesFromState(double time, const vector<double> x0){
 	int  i0 = 0;
 	int i1 = CVS.stateVars.size();
-	CVS.stateVars = vector<double>(x0.begin() + i0, x0.begin() + i1);
-	CVS.getAlgebraicRelations();
+	CVS.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
 	if (doLung){
 		i0 = CVS.stateVars.size();
 		i1 = i0 + lungs.vol.size();		
-		lungs.vol = vector<double>(x0.begin() + i0, x0.begin() + i1);
-		lungs.getAlgebraicRelations();
+		lungs.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
 		if (doGas){
 			i0 = CVS.stateVars.size() + lungs.vol.size();
 			i1 = i0 + gas.stateVars.size();
-			gas.stateVars = vector<double>(x0.begin() + i0, x0.begin() + i1);
-			gas.getAlgebraicRelations();
+			gas.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
 			if (doControlCardio){
 				i0 = CVS.stateVars.size() + lungs.vol.size() + gas.stateVars.size();
 				i1 = i0 + controlCardio.stateVars.size();
-				controlCardio.stateVars = vector<double>(x0.begin() + i0, x0.begin() + i1);
-				controlCardio.setStateVars();
-				controlCardio.getAlgebraicRelations();
+				controlCardio.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
 				if (doControlResp){
 					i0 = CVS.stateVars.size() + lungs.vol.size() + gas.stateVars.size() + controlCardio.stateVars.size();
 					i1 = i0 + controlResp.stateVars.size();
-					controlResp.stateVars = vector<double>(x0.begin() + i0, x0.begin() + i1);
-					controlResp.getAlgebraicRelations();
+					controlResp.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
 				}
 			}
 		}
@@ -563,30 +557,30 @@ void closedloop::setVariablesFromState(double time, const vector<double>& x0){
 	exchangeInfo();
 }
 
-void closedloop::Euler(double dt, double time, const vector<double>& x0, function<vector<double>(double)> fun){
-	vector <double> dvdt = fun(time);
+void closedloop::Euler(double dt, double time, const vector<double> x0, function<vector<double>(double, vector<double>)> fun){
+	vector <double> dvdt = fun(time, x0);
 	for (int i = 0; i < nVars; i++) {
 		x[i] += dt * dvdt[i];
 	}
 } 
 
-void closedloop::RK4(double dt, double time, const vector<double>& x0, function<vector<double>(double)> fun){
-	vector<double> k1 = fun(time);
+void closedloop::RK4(double dt, double time, const vector<double> x0, function<vector<double>(double, vector<double>)> fun){
+	vector<double> k1 = fun(time, x0);
 	vector <double> x1(nVars,0);
 	for (int i = 0; i < nVars; i++) {
 		x1[i] = x0[i] + 0.5 * dt * k1[i];
 	}
-	vector<double> k2 = fun(time + 0.5 * dt);
+	vector<double> k2 = fun(time + 0.5 * dt, x1);
 	vector <double> x2(nVars,0);
 	for (int i = 0; i < nVars; i++) {
-		x2[i] = x1[i] + 0.5 * dt * k2[i];
+		x2[i] = x0[i] + 0.5 * dt * k2[i];
 	}
-	vector<double> k3 = fun(time + 0.5 * dt);
+	vector<double> k3 = fun(time + 0.5 * dt, x2);
 	vector <double> x3(nVars,0);
 	for (int i = 0; i < nVars; i++) {
-		x3[i] = x2[i] + dt * k3[i];
+		x3[i] = x0[i] + dt * k3[i];
 	}
-	vector<double> k4 = fun(time + dt);
+	vector<double> k4 = fun(time + dt, x3);
 	for (int i = 0; i < nVars; i++) {
 		x[i] = x0[i] + (dt / 6.) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
 	}
@@ -604,8 +598,8 @@ void closedloop::timeLoop(int verbose){
 		}
 		// update
 		x = setStateFromVariables();
-		auto Fun = [this](double t) {
-			return this -> getStateTimeDerivative(t);
+		auto Fun = [this](double t, vector< double> x) {
+			return this -> getStateTimeDerivative(t, x);
 		};
 		if (method == 0) {		
 			Euler(dt, time, x, Fun);

@@ -242,8 +242,9 @@ void lungMechanics::getAlgebraicRelations() {
 }
 
 
-void lungMechanics::getTimeDerivative() {
-	getAlgebraicRelations();
+vector<double> lungMechanics::getTimeDerivative(vector<double> x) {
+
+	getVariablesFromState(x);
 
 	dvdt[0] = (resp[6] - P[0]) / R[0] - (P[0] - P[1]) / R[1];	// dvldt
 	dvdt[1] = (P[0] - P[1]) / R[1] - (P[1] - P[2]) / R[2];		// dvtrdt
@@ -251,8 +252,16 @@ void lungMechanics::getTimeDerivative() {
 	dvdt[3] = (P[2] - P[3]) / R[3];								// dvAdt
 	dvdt[4] = (P[0] - P[1]) / R[1] ;							// dvpldt
 	dvdt[5] = 1/T; // dxidt
+
+	return dvdt;
 }
 
+void lungMechanics::getVariablesFromState(vector<double> x) {
+    for (int i = 0; i < vol.size(); i++) {
+        vol[i] = x[i];
+    }
+    getAlgebraicRelations();
+}
 
 void lungMechanics::output() {
 	// State Vars

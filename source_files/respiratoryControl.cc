@@ -141,8 +141,9 @@ void respiratoryControl::getAlgebraicRelations(){
     algVars[3] = (delayedVars[1] - Params[7]);
 }
 
-void respiratoryControl::getTimeDerivative(){
-    getAlgebraicRelations();
+vector<double> respiratoryControl::getTimeDerivative(vector<double> x){
+
+    getVariablesFromState(x);
 
     double taupa;
     double taupf;
@@ -175,6 +176,15 @@ void respiratoryControl::getTimeDerivative(){
     dvdt[1] = (- stateVars[1] + Gca * algVars[2]) / tauca;
     dvdt[2] = (- stateVars[2] + Params[2] * max(algVars[3],0.)) / taupf;
     dvdt[3] = (- stateVars[3] + Gcf * algVars[2]) / taucf;
+
+    return dvdt;
+}
+
+void respiratoryControl::getVariablesFromState(vector<double> x) {
+    for (int i = 0; i < stateVars.size(); i++) {
+        stateVars[i] = x[i];
+    }
+    getAlgebraicRelations();
 }
 
 void respiratoryControl::output(){

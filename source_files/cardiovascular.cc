@@ -559,9 +559,9 @@ void cardiovascular::getAlgebraicRelations() {
     valveAlg[5]=heartAlg[5]-valveAlg[1];                      // M - delta pressure AV 
 }
 
-void cardiovascular::getTimeDerivative() {
-	// definition of the ODE system to be solved
-    getAlgebraicRelations();
+vector<double> cardiovascular::getTimeDerivative(vector<double> x) {
+    // vector<double> dvdt(x.size(), 0.);
+    getVariablesFromState(x);
     // systemic arteries circulation
     dvdt[0] = stateVars[27] - sysCircAlg[1];          // A1 - volume
 
@@ -607,6 +607,16 @@ void cardiovascular::getTimeDerivative() {
     
     dvdt[27] =getqValvedt(valveAlg[5],valveParam[21],valveParam[22],stateVars[27],valveParam[23],stateVars[28]);     // M - flow through AV
     dvdt[28] =getxiValvesdt(valveAlg[5],valveParam[24],valveParam[25],valveParam[26],valveParam[27],stateVars[28]);  // M - openning state xi AV
+
+
+    return dvdt;
+}
+
+void cardiovascular::getVariablesFromState(vector<double> x) {
+    for (int i = 0; i < stateVars.size(); i++) {
+        stateVars[i] = x[i];
+    }
+    getAlgebraicRelations();
 }
 
 void cardiovascular::output(){

@@ -482,6 +482,7 @@ class cardiovascular
     double getxiValvesdt(double deltap,double deltap_open, double k_open, double deltap_close,double k_close,double xi);
     double geteAtria(double t, double tr, double Trp,double tc,double Tcp);
     void getAlgebraicRelations();
-    void getTimeDerivative();
+    vector<double> getTimeDerivative(vector<double> x);
     void output();
+    void getVariablesFromState(vector<double> x);
 };

@@ -321,8 +321,9 @@ void gasTransport::getAlgebraicRelations() {
 	AlveoliLungsAlg[11] = LungsGasParams[18] * (AlveoliLungsAlg[2] - AlveoliLungsAlg[4]);  //mdotco2
 }
 
-void gasTransport::getTimeDerivative() {
-	getAlgebraicRelations();
+vector<double> gasTransport::getTimeDerivative(vector<double> x) {
+	getVariablesFromState(x);
+
 	// lung exchange
 	dvdt[0] = 1. / CommonVars[0]*(AlveoliLungsAlg[0] * CommonVars[1]*(LungsGasParams[0] - max(stateVars[0], 0.)) + AlveoliLungsAlg[1] * CommonVars[2]*(max(stateVars[0], 0.) - max(stateVars[2], 0.))); // A42
 	dvdt[1] = 1. / CommonVars[0]*(AlveoliLungsAlg[0] * CommonVars[1]*(LungsGasParams[1] - max(stateVars[1], 0.)) + AlveoliLungsAlg[1] * CommonVars[2]*(max(stateVars[1], 0.) - max(stateVars[3], 0.))); // A43
@@ -357,10 +358,19 @@ void gasTransport::getTimeDerivative() {
 
 	dvdt[26] = 1. / (CommonVars[12])* (CommonVars[22]*(max(stateVars[22], 0.) - max(0., stateVars[26])) + CommonVars[23]*(max(stateVars[24], 0.) - max(0., stateVars[26])) + CommonVars[21]*(max(stateVars[20], 0.) - max(0., stateVars[26])) + CommonVars[19]*(max(stateVars[16], 0.) - max(0., stateVars[26])) + CommonVars[20]*(max(stateVars[18], 0.) - max(0., stateVars[26]))); // A77
 	dvdt[27] = 1. / (CommonVars[12])* (CommonVars[22]*(max(stateVars[23], 0.) - max(0., stateVars[27])) + CommonVars[23]*(max(stateVars[25], 0.) - max(0., stateVars[27])) + CommonVars[21]*(max(stateVars[21], 0.) - max(0., stateVars[27])) + CommonVars[19]*(max(stateVars[17], 0.) - max(0., stateVars[27])) + CommonVars[20]*(max(stateVars[19], 0.) - max(0., stateVars[27])));  // A78
+
+	return dvdt;
 }
 
 void gasTransport::additionalRelations() {
 	sao2 = (AlveoliLungsAlg[5] - AlveoliLungsAlg[9])/LungsGasParams[16]/1.34; // A56;
+}
+
+void gasTransport::getVariablesFromState(vector<double> x) {
+    for (int i = 0; i < stateVars.size(); i++) {
+        stateVars[i] = x[i];
+    }
+    getAlgebraicRelations();
 }
 
 void gasTransport::output(){

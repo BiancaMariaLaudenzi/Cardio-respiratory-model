@@ -119,9 +119,9 @@ class respiratoryControl
         void InitialCond(string _file);
         void printRespControlParameters();
         void getAlgebraicRelations();
-        void getTimeDerivative();
+        vector<double> getTimeDerivative(vector<double> x);
         void output();
-
+        void getVariablesFromState(vector<double> x);
         //-----------------------------------------------------------------------------------
         // Outputs
         //-----------------------------------------------------------------------------------

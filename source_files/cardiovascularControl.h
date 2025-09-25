@@ -495,7 +495,8 @@ class cardiovascularControl
         void getTimeDerivativeLSR();
         void getTimeDerivativeCNS();
         void getTimeDerivativeSVResponse();
-        void getTimeDerivative();
+        vector<double> getTimeDerivative(vector<double>);
+        void getVariablesFromState(vector<double> x);
         void setStateVars();
         void setStateVarsVector();
         void output();

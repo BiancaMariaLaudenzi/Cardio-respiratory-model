@@ -276,7 +276,8 @@ class gasTransport
 	tuple<double, double> invertedDissociation(double c1, double c2);
 	double heaviside(double value1, double value2);
     void getAlgebraicRelations();
-    void getTimeDerivative();
+    vector<double> getTimeDerivative(vector<double> x);
 	void additionalRelations();
+	void getVariablesFromState(vector<double> x);
     void output();
 };
