@@ -1,71 +1,85 @@
 [LungsGas] 
 fio2 = 0.210379;
 fico2 = 0.000421;
-k = 1.2103; 
-patm = 760.; 
-pws = 47.;   
-csato2 = 0.20448;
-csatco2 = 1.9564192; 
-h1 = 0.3836; 
-h2 = 1.819; 
-alpha1 = 0.03198; 
-alpha2 = 0.05591; 
-beta1 = 0.008275; 
-beta2 = 0.03255; 
-k1 = 14.99; 
-k2 = 194.4; 
-hgb = 0.15;  
-kO2 = 2.28; 
-kCO2 = 65.6; 
+k = 1.2103;
+patm = 760.;
+pws = 47.;
+kO2 = 2.28;
+kCO2 = 65.6;
 
 [TissuesVenousGas]
-vtep = 262.; 
-mo2ep = 14.683; 
-mco2ep = 12.3337; 
-vtsp = 2673.; 
-mo2sp = 108.419; 
-mco2sp = 91.0720; 
-vtmp = 31200.; 
-mo2mp = 51.6; 
-mco2mp = 43.344; 
-vthp = 284.; 
-mo2hp = 24.; 
-mco2hp = 20.16; 
-vtbp = 1300.; 
-mo2bp = 47.502; 
-mco2bp = 39.9017; 
+vtep = 262.;
+mo2ep = 14.683;
+mco2ep = 12.3337;
+vtsp = 2673.;
+mo2sp = 108.419;
+mco2sp = 91.0720;
+vtmp = 31200.;
+mo2mp = 51.6;
+mco2mp = 43.344;
+vthp = 284.;
+mo2hp = 24.;
+mco2hp = 20.16;
+vtbp = 1300.;
+mo2bp = 47.502;
+mco2bp = 39.9017;
+
+[pHmodel]
+KaCO2 = 7.943282e-07;
+KaPr = 5.011872e-08;
+NaOH_0 = 43e-3;
+HPr_0 = 41e-3;
+xHbf = 0.0;
+xHbCO = 0.005;
+xHi = 0.005;
+cDPG = 5.01e-3;
+T_C = 37.0;
+alphaO2 = 9.83e-6;
+cHb = 9.3e-3;
+alphaCO2_Ery = 0.195e-3;
+alphaCO2_Pla = 0.230e-3;
+cHb_Ery = 21.0e-3;
 
 [DelayedGasParam]
 tault = 18.;
-tauvl = 10.; 
+tauvl = 10.;
 
 [initial_conditions]
 fdo2 = 0.18;
-fdco2 = 0.0281; 
-fAo2 = 0.146; 
+fdco2 = 0.0281;
+fAo2 = 0.146;
 fAco2 = 0.0547;
-cppo2 = 0.1994;
-cppco2 = 0.4793;
-cepo2 = 0.19;
-cepco2 = 0.48;
-cspo2 = 0.12;
-cspco2 = 0.54;
-cmpo2 = 0.15;
-cmpco2 = 0.51;
-chpo2 = 0.15; 
-chpco2 = 0.55;
-cbpo2 = 0.13;
-cbpco2 = 0.53;
-cevo2 = 0.19;
-cevco2 = 0.48;
-csvo2 = 0.12;
-csvco2 = 0.54;
-cmvo2 = 0.15;
-cmvco2 = 0.51;
-chvo2 = 0.15; 
-chvco2 = 0.55;
-cbvo2 = 0.13;
-cbvco2 = 0.53;
-cvo2 = 0.151;
-cvco2 = 0.52;
+
+H = 0.0000000339;
+pH = 7.4;
+pppco2 = 38.9974;
+pppo2 = 104.082;
+pepco2 = 37.6065;
+pepo2 = 67.5991;
+pspco2 = 45.6982;
+pspo2 = 30.6311;
+pmpco2 = 40.7813;
+pmpo2 = 38.0859;
+phpco2 = 49.6231;
+phpo2 = 40.5419;
+pbpco2 = 43.9942;
+pbpo2 = 32.7514;
+pevco2 = 37.6065;
+pevo2 = 67.5991;
+psvco2 = 45.6982;
+psvo2 = 30.6311;
+pmvco2 = 40.7813;
+pmvo2 = 38.0859;
+phvco2 = 49.6231;
+phvo2 = 40.5419;
+pbvco2 = 43.9942;
+pbvo2 = 32.7514;
+pvco2 = 42.9239;
+pvo2 = 39.0809;
+
+
+
+
+
+
 

@@ -39,8 +39,27 @@ Sources:
 (6) * Mauro Ursino and Elisa Magosso. A theoretical analysis of the carotid body chemoreceptor
     *    response to O2 and CO2 pressure changes. Respiratory Physiology & Neurobiology, 130(1):99–110, March 2002.
 
-## Changes
-The changes with respect to the previous version are listed in `CHANGES.txt`.
+(7) * PR Trenhago et al.
+    * An integrated mathematical model of the cardiovascular and respiratory systems.
+    * International Journal for Numerical Methods in Biomedical Engineering, 32(1):e02736, 2016. https://doi.org/10.1002/cnm.2736
+
+(8) * TG Christensen and C Draeby.
+    * Modelling the Respiratory System. MA thesis, Roskilde University, 1996.
+
+## pH-extended version
+This branch contains the pH-extended version of the model, based on version v2.0.0. The differences with respect to v2.0.0 are listed below.
+
+Code:
+- `transport.cc`, `transport.h`: the closed-form O2 and CO2 dissociation curves are replaced by a pH-dependent formulation following (7). Blood pH is computed by solving a cubic equation in [H+] with the Newton-Raphson method (`calculate_pH`), and CO2 is described by separate erythrocyte and plasma fractions. The curves are evaluated in mol/L and kPa and are inverted numerically (`invertedDissociation`). The initial conditions of gas transport are assigned as partial pressures.
+- `closedloop.cc`: the arterial O2 saturation is obtained from the dissociation curves.
+- `Makefile`: the executable is `cardiorespiratory_ph.x`.
+
+Parameters: the parametrization is the same as in v2.0.0, except for the dissociation curve parameters.
+- `transport.dat`: new section [pHmodel] with the parameters of the pH model and of the dissociation curves; [HPr]0 and [NaOH]0 are tuned, the other parameters are taken from (8). The initial conditions are partial pressures instead of concentrations, with the additional initial values H and pH.
+- `commonParams_noControl.dat`: contains the steady-state values of the controlled variables of the pH-extended model.
+
+Output:
+- `GAS_AlveoliLungsAlg.txt`: [14] pHsysArt (systemic arterial pH), [15] pHpulCap (pulmonary capillary pH), [16] sao2 (arterial O2 saturation), [17] sppo2 (pulmonary capillary O2 saturation). In v2.0.0, column [14] is sao2.
 
 ## Directory structure
 
@@ -58,7 +77,7 @@ Please check that parameter files only use "LF" end-of-line characters. If end-o
 - enter the "source_files" directory and run "make -f Makefile clean all";
 - go back to the main directory and run "make -f Makefile clean all";
 - define appropriate input data in "inputData.dat";
-- run "./cardiorespiratory.x inputData.dat".
+- run "./cardiorespiratory_ph.x inputData.dat".
 
 ## Simulation settings (inputData.dat)
 

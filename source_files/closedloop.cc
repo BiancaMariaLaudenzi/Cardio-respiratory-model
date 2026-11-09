@@ -152,7 +152,6 @@ void closedloop::init(string ifile, int verbose) {
 				gas.CommonVars[i+29]=CVS.pulCircAlg[i];
 			}
 			gas.CommonVars[33]=CVS.pulCircAlg[8];
-			gas.additionalRelations();	
 			if (doControlCardio){
 				controlCardio.init(ifileControlCardio, ifileCommon, pathResults);
 				// delayed quantities
@@ -285,7 +284,6 @@ void closedloop::exchangeInfo(){
 				gas.CommonVars[i+29]=CVS.pulCircAlg[i];
 			}
 			gas.CommonVars[33]=CVS.pulCircAlg[8];
-			gas.additionalRelations();
 			if (doControlCardio){
 				// from gas transport
 				controlCardio.varsTransport[0] = gas.AlveoliLungsAlg[8];
@@ -409,7 +407,7 @@ void closedloop::setVariablesFromState(double time, const vector<double> x0){
 		i0 = CVS.stateVars.size();
 		i1 = i0 + lungs.vol.size();		
 		lungs.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
-		if (doGas){
+		if (doGas && gasActive){
 			i0 = CVS.stateVars.size() + lungs.vol.size();
 			i1 = i0 + gas.stateVars.size();
 			gas.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));

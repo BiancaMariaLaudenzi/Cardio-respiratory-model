@@ -32,7 +32,7 @@ LDFLAGS = $(DIRSOURCE)/libcardiorespsolver.a -lm
 # paths to include files (out of current directory)
 INCLUDES = -I$(DIRSOURCE)
 # output
-EXEC=cardiorespiratory.x
+EXEC=cardiorespiratory_ph.x
 
 # input
 
@@ -57,4 +57,4 @@ $(EXEC): $(OBJS) $(LIBDEPS)
 	$(CPP) $(CPPFLAGS)  $(INCLUDES) -c $< -o $@
 
 clean: 	
-	rm -f *.o cardiorespiratory.x 
+	rm -f *.o cardiorespiratory_ph.x 

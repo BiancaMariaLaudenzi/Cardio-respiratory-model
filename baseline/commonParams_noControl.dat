@@ -1,17 +1,17 @@
 [cardiovascular_and_cardiovascularControl]
 // Controlled variables averaged over the last 60 s of a 2000 s simulation with all controls active
 // Used automatically when doControlCardio = 0
-vusv0 = 1261.1733; 
-vuev0 = 592.0135; 
-vumv0 = 464.9945; 
-rsp0 = 2.2968; 
-rep0 = 2.4396; 
-rmp0 = 3.9302; 
-rhp0 = 19.2423; 
-rbp0 = 6.5944; 
-emaxlv0 = 2.7612; 
-emaxrv0 = 1.3488; 
-T0 = 0.88; 
+vusv0 = 1266.9059;
+vuev0 = 593.6164;
+vumv0 = 466.2535;
+rsp0 = 2.2436;
+rep0 = 2.2912;
+rmp0 = 4.4676;
+rhp0 = 21.2265;
+rbp0 = 7.1575;
+emaxlv0 = 2.7360;
+emaxrv0 = 1.3338;
+T0 = 0.88;
 
 [cardiovascularControl_and_cardiorespiratoryControl]
 paco2n = 40.; //mmHg

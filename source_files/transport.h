@@ -21,19 +21,30 @@
 using namespace std;
 
 /**
- * @brief Gas transport and exchange model
+ * @brief Gas transport and exchange model with pH-extended dissociation curves
  * 
- * @note Gas trasnport and exchange model proposed in:
+ * @note Gas transport and exchange model proposed in:
  *
  * A Albanese, L Cheng, M Ursino & N. W. Chbat.
  * An integrated mathematical model of the human cardiopulmonary system: model development.
  * American Journal of Physiology-Heart and Circulatory Physiology 2016 310, H899-H921.   (A)
+ *
+ * @note O2 and CO2 dissociation curves and blood pH model following:
+ *
+ * P R Trenhago et al.
+ * An integrated mathematical model of the cardiovascular and respiratory systems.
+ * International Journal for Numerical Methods in Biomedical Engineering 2016 32(1), e02736.   (T)
  *
  * Units:
  * - concentration [mL/mL]
  * - pressure [mmHg]
  * - consumption rate [mL/min]
  * - volumes [mL]
+ *
+ * Units in the dissociation curves and pH model (calculate_pH, dissociation, invertedDissociation):
+ * - concentration [mol/L] (from mL/mL: divide by 22.7 mL/mmol)
+ * - pressure [kPa] (from mmHg: multiply by 0.133322 kPa/mmHg)
+ * - hydrogen ion concentration [H+] [mol/L]
 */
 
 class gasTransport
@@ -42,6 +53,7 @@ class gasTransport
     /// time 
     double time;
     int verbose;
+	int initial_cond = 1; // 0: assign concentrations, 1: assign pressures
 
 	//-----------------------------------------------------------------------------------
     // State Variables
@@ -130,25 +142,11 @@ class gasTransport
 	 *	k		[2]        // proportionality constant that allows convertion of volumes from body
 	 *	patm	[3]        // atmospheric pressure
 	 *	pws		[4]        // water vapour pressure
-	 *	// dissociation curves
-	 *	csato2  [5]        // O2 saturation concentration
-	 *	csatco2 [6]        // CO2 saturation concentration
-	 *	h1      [7]        // dissociation function coefficient
-	 *	h2      [8]        // dissociation function coefficient
-	 *	alpha1  [9]        // dissociation function coefficient
-	 *	alpha2  [10]       // dissociation function coefficient
-	 *	beta1   [11]       // dissociation function coefficient
-	 *	beta2   [12]       // dissociation function coefficient
-	 *	k1      [13]       // dissociation function coefficient
-	 *	k2      [14]       // dissociation function coefficient
-	 *	// physiological status
-	 *	sh      [15]       // shunt percentage
-	 *	hgb     [16]       // hemoglobin content  (g/mL)
 	 * // exchange coefficient that summarize the entire respiratory membrane properties (e.g. surface area, thickness, etc.) 
-	 * kO2      [17]
-	 * kCO2     [18]
+	 * kO2      [5]
+	 * kCO2     [6]
     */
-    vector<double> LungsGasParams = vector<double>(19);  
+    vector<double> LungsGasParams = vector<double>(7);  
 
     /**
 	 * @brief Vector of 15 components that contains parameters for tissue gas exchange and transport (Tab. 5 - A)
@@ -175,6 +173,25 @@ class gasTransport
     vector<double> TissuesVenousGasParam = vector<double>(15);   
 
 	/**
+	 * @brief Vector of 14 components that contains parameters for pH and dissociation curves
+	 * [0] KaCO2 = pow(10, -6.1);      		// [mol/l] dissociation constant of CO2 (42)
+	 * [1] KaPr = pow(10, -7.3);       		// [mol/l] dissociation constant of plasma proteins (43)
+	 * [2] NaOH_0 = 43.0e-3;     		  	// [mol/l] [NaOH]  (46)
+	 * [3] HPr_0 = 41.0e-3;      		  	// [mol/l] [HPr]  (47)
+	 * [4] xHbf = 0.0; 						// [-] fraction of fetal hemoglobin concentration in the blood
+	 * [5] xHbCO = 0.005; 					// [-] fraction of carboxyhemoglobin in the blood
+	 * [6] xHi = 0.005; 					// [-] fraction of methemoglobin (hemiglobin) in the blood
+	 * [7] cDPG = 5.01e-3 ; 				// [mol/l] concentration of 2,3-diphosphogycerate in the erythrocyte
+	 * [8] T_C = 37.0; 						// [°C] blood temperature in Celsius
+	 * [9] alphaO2 = 9.83e-6;  				// [mol/l/kPa] solubility of O2
+	 * [10] cHb = 9.3e-3; 					// [mol/l] total concentration of Hb 
+	 * [11] alphaCO2_Ery = 0.195e-3;		// [mol/l/kPA] solubility of CO2 in erythrocyte (33)
+	 * [12] alphaCO2_Pla = 0.230e-3;		// [mol/l/kPA] solubility of CO2 in plasma (34)
+	 * [13] cHb_Ery = 21.0e-3;				// [mol/l] concentration of Hb in erythrocyte 
+	*/
+	vector<double> GasParams = vector<double>(14);   
+
+	/**
 	 * @brief Vector of 2 components that contains parameters for 
 	 * tault	    [0]		
 	 * tauvl		[1]
@@ -195,7 +212,7 @@ class gasTransport
 	* vmv	[9]		// CVS.sysCircAlg[27]
 	* vhv	[10]    // CVS.stateVars[9-11]
 	* vbv	[11]
-	* vtv	[12]
+	* vtv	[12]    //                      + CVS.TveinParam[4]
 	* vpp	[13]    // CVS.stateVars[13]
 	* qep	[14]	// CVS.sysCircAlg[7-11]
 	* qsp	[15]
@@ -207,9 +224,9 @@ class gasTransport
 	* qmv	[21]
 	* qhv	[22]
 	* qbv	[23] 
-	* vev	[24]	// CVS.stateVars[6-7]
+	* vev	[24]	// CVS.sysCircAlg[26-32]
 	* vsv	[25]
-	* qepin [26]	// CVS.sysCircAlg[28-32]
+	* qepin [26]
 	* qspin [27]
 	* qmpin [28]
 	* qhpin [29]
@@ -251,10 +268,42 @@ class gasTransport
 	 */
 	vector<double> TissueVenousGasAlg = vector<double>(4);
 
-	/*Additional relations
-		sao2 // O2 percentage saturation of blood
-	*/
-	double sao2;
+	double sao2; // saturation systemic arteries
+	double sppo2; // saturation pumonary capillary
+	double HsysArt;
+	double HpulCap;
+	double pHsysArt;
+	double pHpulCap;
+
+    //-----------------------------------------------------------------------------------
+    // Initial conditions of pressures
+    //-----------------------------------------------------------------------------------
+	// pppco2 = 38.9974;
+	// pppo2 = 104.082;
+	// pepco2 = 37.6065;
+	// pepo2 = 67.5991;
+	// pspco2 = 45.6982;
+	// pspo2 = 30.6311;
+	// pmpco2 = 40.7813;
+	// pmpo2 = 38.0859;
+	// phpco2 = 49.6231;
+	// phpo2 = 40.5419;
+	// pbpco2 = 43.9942;
+	// pbpo2 = 32.7514;
+	// pevco2 = 37.6065;
+	// pevo2 = 67.5991;
+	// psvco2 = 45.6982;
+	// psvo2 = 30.6311;
+	// pmvco2 = 40.7813;
+	// pmvo2 = 38.0859;
+	// phvco2 = 49.6231;
+	// phvo2 = 40.5419;
+	// pbvco2 = 43.9942;
+	// pbvo2 = 32.7514;
+	// pvco2 = 42.9239;
+	// pvo2 = 39.0809;
+	vector<double> PressuresInitialCond = vector<double>(24);
+
 
     //-----------------------------------------------------------------------------------
     // Outputs
@@ -273,8 +322,13 @@ class gasTransport
     void readGASparameters(string _file, string _fileC);
     void printGASparameters();
     void InitialCond(string _file);
-	tuple<double, double> dissociation(double p1, double p2);
-	tuple<double, double> invertedDissociation(double c1, double c2);
+	tuple<double, double, double> dissociation(double pCO2, double pO2, double cCO2_OLD, double H_old);
+	tuple<double, double, double> invertedDissociation(double cCO2_target, double cO2_target, double H_old, double pCO2_OLD, double pO2_OLD);
+	tuple<double, double> calculate_pH(double cCO2, double H_old);
+	double calculate_SO2(double pO2, double pCO2, double pH);
+	double calculate_cO2(double pO2, double SO2);
+	double calculate_cCO2(double pCO2, double pH, double SO2);
+	double df_dcCO2(double cCO2, double pCO2, double pO2, double H_old);
 	double heaviside(double value1, double value2);
     void getAlgebraicRelations();
     vector<double> getTimeDerivative(vector<double> x);
