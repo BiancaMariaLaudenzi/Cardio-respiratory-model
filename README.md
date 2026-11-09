@@ -9,13 +9,13 @@ For more details, see `LICENSE.LGPL` or visit:
 🔗 https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 
 ## Data Sources
-The data in the directory "params" is partially sourced from published scientific papers. The data is not covered by the Apache License 2.0 but remain under the copyright or license specified by their respective authors.
+The data in the directory "baseline" is partially sourced from published scientific papers. The data is not covered by the Apache License 2.0 but remain under the copyright or license specified by their respective authors.
 
 Sources:
 
-(0) * BM Laudenzi, A Cucino, S Lassola, E Balzani, LO Muller
-    * Predicting in-hospital indicators from wearable-derived signals for cardiovascular and respiratory disease monitoring: an in silico study.
-    * Submitted for publication to PLOS Digital Health, March 2025
+(0) * BM Laudenzi, A Cucino, S Lassola, E Balzani, LO Müller
+    * Predicting in-hospital indicators from wearable-derived signals for cardiovascular and respiratory disease monitoring: An in silico study.
+    * PLOS Digital Health 4(10): e0001041, 2025. https://doi.org/10.1371/journal.pdig.0001041
 
 (1) * A Albanese, L Cheng, M Ursino & N. W. Chbat.
     * An integrated mathematical model of the human cardiopulmonary system: model development.
@@ -39,19 +39,32 @@ Sources:
 (6) * Mauro Ursino and Elisa Magosso. A theoretical analysis of the carotid body chemoreceptor
     *    response to O2 and CO2 pressure changes. Respiratory Physiology & Neurobiology, 130(1):99–110, March 2002.
 
-## How to run the code
+## Changes
+The changes with respect to the previous version are listed in `CHANGES.txt`.
 
-The directory "source_files" contains the files ".cc" and ".h" representing the different systems: the cardiovascular system (cardiovascular), the lungs mechanics system (lungMechanics), the gas exchange and transport system (transport), the cardiovascular control system (cardiovascularControl) and the ventilatory control system (respiratoryControl). 
+## Directory structure
 
-The "test/params" directory contains the input parameters of the model divided for each system. Note that the file "commonParams.dat" contains the input parameters that are common to more than one system. Results will be saved in a subfolder of the "test" directory. 
+- "source_files": files ".cc" and ".h" representing the different systems: the cardiovascular system (cardiovascular), the lungs mechanics system (lungMechanics), the gas exchange and transport system (transport), the cardiovascular control system (cardiovascularControl) and the ventilatory control system (respiratoryControl).
+- "baseline": input parameters of the model divided for each system. The file "commonParams.dat" contains the input parameters that are common to more than one system. The file "commonParams_noControl.dat" contains the common parameters used when the cardiovascular control is not active (see below).
+- "inputData.dat": simulation settings (numerical method, time parameters, active systems, results folder, parameter files).
+- "main.cc" and "Makefile": main program and Makefile to build the executable.
+
+Results are saved in the folder defined by "pathResults" in "inputData.dat".
 
 Please check that parameter files only use "LF" end-of-line characters. If end-of-line characters are "CRLF", parameters are not read correctly.
 
-To run the code:
+## How to run the code
+
 - enter the "source_files" directory and run "make -f Makefile clean all";
-- exit the "source_files" diretory, enter the "test" directory and run "make -f Makefile clean all";
+- go back to the main directory and run "make -f Makefile clean all";
 - define appropriate input data in "inputData.dat";
 - run "./cardiorespiratory.x inputData.dat".
 
+## Simulation settings (inputData.dat)
 
+- [methods] method: numerical method, 0 for Euler, 1 for Heun, 2 for Runge-Kutta order 4.
+- [convergence]: the simulation stops before "timeStop" when it has reached a steady state. From "nextConvCheck" on, every "windowConv" seconds, the mean values over the last window of systemic arterial pressure, central venous pressure, aortic valve flow, heart period (if the cardiovascular control is active), PaO2 and PaCO2 (if gas transport is active) are compared with the mean values over the previous window. If all relative changes are below "tolConv", the simulation stops and "convergence_report.txt" is written in the results folder. The check uses the sampled values, so sampling ("tSampleIni", "dtSample") must cover at least the last two windows. To disable the check, set "nextConvCheck" larger than "timeStop".
+- [systems]: the systems are activated sequentially (cardiovascular system always active -> doLung -> doGas -> doControlCardio -> doControlResp). For example, it is not possible to activate doGas and deactivate doLung.
+- [commonParams] commonParamsNoControl: if doControlCardio = 0, the common parameters are read from this file instead of "commonParams". "commonParams_noControl.dat" contains the controlled variables (resistances, unstressed volumes, maximum elastances, heart period) at steady state of a simulation with all controls active, so that a simulation without cardiovascular control reproduces the same baseline state.
 
+If a NaN appears in the state variables, the simulation stops and "nan_detected.txt" is written in the results folder.

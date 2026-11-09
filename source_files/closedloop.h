@@ -46,6 +46,13 @@ class closedloop
     int iT;
     int method;
 
+    // to test convergence
+    double nextConvCheck;       // time of the first convergence check [s]
+    double windowConv;          // averaging window length [s]
+    double tolConv;             // relative tolerance for convergence
+    vector<deque<double>> buffersPrev60{6};
+    vector<deque<double>> buffersLast60{6};
+
     // systems
     int doLung;
     int doGas;
@@ -56,6 +63,8 @@ class closedloop
     double tIni;
     double tIniGas;
     double tIniControl;
+    bool gasActive = false;
+    bool controlActive = false;
     double timeStop;
     double tSampleIni;
     double tSampleEnd;
@@ -123,6 +132,8 @@ class closedloop
     void setVariablesFromState(double time, vector<double> x);
     void Euler(double dt, double time, const vector<double> x0, function<vector<double>(double, vector<double>)> fun);
     void RK4(double dt, double time, const vector<double> x0, function<vector<double>(double, vector<double>)> fun);
+    void Heun(double dt, double time, const vector<double> x0, function<vector<double>(double, vector<double>)> fun);
+    double correctTimeLTS(double time, double tRef);
     void exchangeInfo();
     void timeLoop(int verbose);
     double interpolate(const deque<double>& xData, const deque<double>& yData, double x0, bool extrapolate);

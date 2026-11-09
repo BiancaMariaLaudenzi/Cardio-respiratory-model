@@ -195,7 +195,7 @@ class gasTransport
 	* vmv	[9]		// CVS.sysCircAlg[27]
 	* vhv	[10]    // CVS.stateVars[9-11]
 	* vbv	[11]
-	* vtv	[12]    //                      + CVS.TveinParam[4]
+	* vtv	[12]
 	* vpp	[13]    // CVS.stateVars[13]
 	* qep	[14]	// CVS.sysCircAlg[7-11]
 	* qsp	[15]
@@ -207,17 +207,18 @@ class gasTransport
 	* qmv	[21]
 	* qhv	[22]
 	* qbv	[23] 
-	* vev	[24]	// CVS.sysCircAlg[26-32]
+	* vev	[24]	// CVS.stateVars[6-7]
 	* vsv	[25]
-	* qepin [26]
+	* qepin [26]	// CVS.sysCircAlg[28-32]
 	* qspin [27]
 	* qmpin [28]
 	* qhpin [29]
 	* qbpin [30]
 	* qpp	[31]	//	pulCircAlg[2-3]
 	* qps	[32]
+	* qppin [33]
 	*/
-	vector<double> CommonVars = vector<double>(33);
+	vector<double> CommonVars = vector<double>(34);
 
     //-----------------------------------------------------------------------------------
     // Algebraic variables
@@ -278,6 +279,10 @@ class gasTransport
     void getAlgebraicRelations();
     vector<double> getTimeDerivative(vector<double> x);
 	void additionalRelations();
+	void updateFlowFilter(double dt);
+	double qpp_filt = 0.;
+	double qps_filt = 0.;
+	double tauFlowFilter = 0.75;
 	void getVariablesFromState(vector<double> x);
     void output();
 };

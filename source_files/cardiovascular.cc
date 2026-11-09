@@ -204,14 +204,15 @@ void cardiovascular::readCVSparameters(string _file, string _fileC) {
 	VuParam[3] = ifile("unstressed_volumes/vump",0.);
     VuParam[4] = ifile("unstressed_volumes/vuhp",0.);
     VuParam[5] = ifile("unstressed_volumes/vubp",0.);
-    VuParam[6] = ifileC("cardiovascularControl/vuev0",0.);
-    VuParam[7] = ifileC("cardiovascularControl/vusv0",0.);
-    VuParam[8] = ifileC("cardiovascularControl/vumv0",0.);
+    VuParam[6] = ifileC("cardiovascular_and_cardiovascularControl/vuev0",0.);
+    VuParam[7] = ifileC("cardiovascular_and_cardiovascularControl/vusv0",0.);
+    VuParam[8] = ifileC("cardiovascular_and_cardiovascularControl/vumv0",0.);
     VuParam[9] = ifile("unstressed_volumes/vuhv",0.);
     VuParam[10] = ifile("unstressed_volumes/vubv",0.);
     VuParam[11] = ifile("unstressed_volumes/vupa",0.);
     VuParam[12] = ifile("unstressed_volumes/vupp",0.);
     VuParam[13] = ifile("unstressed_volumes/vupv",0.);
+    params[0] = ifile("unstressed_volumes/sh",0.); 
 
 	// [resistances]
 	Rparam[0] = ifile("resistances/Rp",0.);
@@ -222,11 +223,11 @@ void cardiovascular::readCVSparameters(string _file, string _fileC) {
     Rparam[5] = ifile("resistances/rbv",0.);
     Rparam[6] = ifile("resistances/rpp",0.);
     Rparam[7] = ifile("resistances/rpv",0.);
-    Rparam[8] = ifileC("cardiovascularControl/rsp0",0.);
-    Rparam[9] = ifileC("cardiovascularControl/rep0",0.);
-    Rparam[10] = ifileC("cardiovascularControl/rmp0",0.);
-    Rparam[11] = ifileC("cardiovascularControl/rhp0",0.);
-    Rparam[12] = ifileC("cardiovascularControl/rbp0",0.);
+    Rparam[8] = ifileC("cardiovascular_and_cardiovascularControl/rsp0",0.);
+    Rparam[9] = ifileC("cardiovascular_and_cardiovascularControl/rep0",0.);
+    Rparam[10] = ifileC("cardiovascular_and_cardiovascularControl/rmp0",0.);
+    Rparam[11] = ifileC("cardiovascular_and_cardiovascularControl/rhp0",0.);
+    Rparam[12] = ifileC("cardiovascular_and_cardiovascularControl/rbp0",0.);
     Rparam[13] = ifile("resistances/Rpp",0.);
     Rparam[14] = ifile("resistances/Rps",0.);
 
@@ -248,8 +249,6 @@ void cardiovascular::readCVSparameters(string _file, string _fileC) {
     atriaParam[0] = ifile("atria/vula",0.); 
     atriaParam[1] = ifile("atria/vura",0.); 
     atriaParam[2] = ifile("atria/s",0.); 
-    atriaParam[3] = ifile("atria/trRA",0.); 
-    atriaParam[4] = ifile("atria/trLA",0.); 
     atriaParam[5] = ifile("atria/tcRA",0.); 
     atriaParam[6] = ifile("atria/tcLA",0.); 
     atriaParam[7] = ifile("atria/TrpRA",0.); 
@@ -260,6 +259,8 @@ void cardiovascular::readCVSparameters(string _file, string _fileC) {
     atriaParam[12] = ifile("atria/eBLA",0.); 
     atriaParam[13] = ifile("atria/eARA",0.); 
     atriaParam[14] = ifile("atria/eBRA",0.); 
+    atriaParam[3] = std::round((atriaParam[5] + atriaParam[9]) * 1000.0) / 1000.0;  // trRA = tcRA + TcpRA
+    atriaParam[4] = std::round((atriaParam[6] + atriaParam[10]) * 1000.0) / 1000.0; // trLA = tcLA + TcpLA
 
     // [ventricles]
     ventrParam[0] = ifile("ventricles/p0lv",0.);
@@ -268,10 +269,12 @@ void cardiovascular::readCVSparameters(string _file, string _fileC) {
     ventrParam[3] = ifile("ventricles/kerv",0.);
     ventrParam[4] = ifile("ventricles/vulv",0.);
     ventrParam[5] = ifile("ventricles/vurv",0.);
-    ventrParam[6] = ifileC("cardiovascularControl/emaxlv0",0.);
-    ventrParam[7] = ifileC("cardiovascularControl/emaxrv0",0.);
+    ventrParam[6] = ifileC("cardiovascular_and_cardiovascularControl/emaxlv0",0.);
+    ventrParam[7] = ifileC("cardiovascular_and_cardiovascularControl/emaxrv0",0.);
     ventrParam[8] = ifile("ventricles/krlv",0.);
     ventrParam[9] = ifile("ventricles/krrv", 0.0014);
+    params[3] = ifile("ventricles/tsys0",0.); 
+    params[4] = ifile("ventricles/ksys",0.);
 
     // [heart valves]
     valveParam[0] = ifile("valve/AmaxTV",-1.);
@@ -308,24 +311,29 @@ void cardiovascular::readCVSparameters(string _file, string _fileC) {
     valveParam[31] = ifile("valve/APV",0.);
     valveParam[32] = ifile("valve/AMV",0.);
     valveParam[33] = ifile("valve/AAV",0.);
+    MstTV = ifile("valve/MstTV",1.);
+    MrgTV = ifile("valve/MrgTV",1e-5);
+    MstPV = ifile("valve/MstPV",1.);
+    MrgPV = ifile("valve/MrgPV",1e-5);
+    MstMV = ifile("valve/MstMV",1.);
+    MrgMV = ifile("valve/MrgMV",1e-5);
+    MstAV = ifile("valve/MstAV",1.);
+    MrgAV = ifile("valve/MrgAV",1e-5);
+    params[1] = ifile("valve/rho", 1.04); 
 
     // Assign max and min valve areas
-    valveParam[0] = valveParam[30];        // AmaxTV
-    valveParam[1] = valveParam[30]*1e-5;   // AminTV
-    valveParam[7] = valveParam[31];        // AmaxPV
-    valveParam[8] = valveParam[31]*1e-5;   // AminPV
-    valveParam[14] = valveParam[32];       // AmaxMV
-    valveParam[15] = valveParam[32]*1e-5;  // AminMV
-    valveParam[21] = valveParam[33];       // AmaxAV
-    valveParam[22] = valveParam[33]*1e-5;  // AminAV
+    valveParam[0] = valveParam[30] * MstTV;   // AmaxTV
+    valveParam[1] = valveParam[30] * MrgTV;   // AminTV
+    valveParam[7] = valveParam[31] * MstPV;   // AmaxPV
+    valveParam[8] = valveParam[31] * MrgPV;   // AminPV
+    valveParam[14] = valveParam[32] * MstMV;  // AmaxMV
+    valveParam[15] = valveParam[32] * MrgMV;  // AminMV
+    valveParam[21] = valveParam[33] * MstAV;  // AmaxAV
+    valveParam[22] = valveParam[33] * MrgAV;  // AminAV
 
     // [additional parameters]
-    params[0] = ifileC("shunt/sh",0.); 
-    params[1] = ifile("param/rho", 1.04); 
-    params[2] = ifile("param/T", 0.833);  
-    params[3] = ifile("param/tsys0",0.); 
-    params[4] = ifile("param/ksys",0.); 
-	params[5] = ifileC("pleuralPressure/pl", 1000.); 
+    params[2] = ifileC("cardiovascular_and_cardiovascularControl/T0", 0.833);   
+	params[5] = ifileC("cardiovascular_and_lungMechanics/plee", 1000.); 
 
     // controlled variables
     controlledVars[0] = params[2];      // T 
@@ -462,6 +470,9 @@ double cardiovascular::geteAtria(double t, double tr, double Trp,double tc,doubl
     else if (t<=1.){
         e=0.5*(1.+cos(M_PI*(t-tr)/Trp));
     }
+    else { // rest if relaxation ends before t = 1
+        e = 0.0;
+    }
     return e;
 }
 
@@ -499,16 +510,15 @@ void cardiovascular::getAlgebraicRelations() {
     sysCircAlg[11] = max(sysCircAlg[6]-sysCircAlg[19],0.)/controlledVars[8];    // A6 - flow b
     // thoracic veins
     double psi;
-    psi = TveinParam[9]/exp(stateVars[11]/TveinParam[10]-1.) ;
+    psi = TveinParam[9]/(exp(stateVars[11]/TveinParam[10])-1.) ;
     if ((stateVars[11])>=TveinParam[4]){
         sysCircAlg[12] = TveinParam[0] + TveinParam[1]*(stateVars[11]-TveinParam[4]) - psi;
     }
     else{
         sysCircAlg[12] = TveinParam[6] + TveinParam[7]*exp(stateVars[11]/TveinParam[8])-psi;
     }
-    sysCircAlg[13] = sysCircAlg[12] + params[5];                                                                    // A17 - pressure 
-    sysCircAlg[14] = TveinParam[2]*pow(TveinParam[3]/stateVars[11],2)+TveinParam[5];                // resistance
-    sysCircAlg[25] = max(0.,(sysCircAlg[13]-heartAlg[7])/sysCircAlg[14]);                                           // A16 - flow
+    sysCircAlg[13] = sysCircAlg[12] + params[5];                                             // A17 - pressure 
+    sysCircAlg[14] = TveinParam[2]*pow(TveinParam[3]/stateVars[11],2)+TveinParam[5];         // resistance
     // systemic venous circulation
     sysCircAlg[20] = max(sysCircAlg[15]-sysCircAlg[13],0.)/Rparam[1];       // A13 - flow e
     sysCircAlg[21] = max(sysCircAlg[16]-sysCircAlg[13],0.)/Rparam[2];       // A13 - flow s
@@ -526,7 +536,6 @@ void cardiovascular::getAlgebraicRelations() {
     pulCircAlg[5] = pulCircAlg[8] + pulCircAlg[9];                                                                  // flow through arteries
     pulCircAlg[2] = (pulCircAlg[6]-pulCircAlg[1])/(Rparam[6]*100/(100-params[0]));                                  // A22 - flow through peripheral
     pulCircAlg[3] = (pulCircAlg[7]-pulCircAlg[1])/(Rparam[6]*100/params[0]);                                        // A23 - flow through shunt
-    pulCircAlg[4] = max((pulCircAlg[1]-heartAlg[8]),0.)/Rparam[7];   
     
     // HEART
 	// general heart
@@ -548,8 +557,15 @@ void cardiovascular::getAlgebraicRelations() {
     heartAlg[9]=geteAtria(heartAlg[1],atriaParam[4],atriaParam[8],atriaParam[6],atriaParam[10]);    // L - elastance LA
     heartAlg[10]=geteAtria(heartAlg[1],atriaParam[3],atriaParam[7],atriaParam[5],atriaParam[9]);    // L - elastance RA
 
-    heartAlg[7]=(atriaParam[13]*heartAlg[10]+atriaParam[14])*(stateVars[19]-atriaParam[1])+atriaParam[2]*(sysCircAlg[25]-stateVars[21])+params[5];  // L - pressure RA
-    heartAlg[8]=(atriaParam[11]*heartAlg[9]+atriaParam[12])*(stateVars[16]-atriaParam[0])+atriaParam[2]*(pulCircAlg[4]-stateVars[25])+params[5];    // L - pressure LA
+    double P0, Rin;
+    P0 = (atriaParam[13]*heartAlg[10]+atriaParam[14])*(stateVars[19]-atriaParam[1])-atriaParam[2]*stateVars[21]+params[5];
+    Rin = sysCircAlg[14];
+    heartAlg[7] = (sysCircAlg[13] > P0) ? (P0+atriaParam[2]*sysCircAlg[13]/Rin)/(1.+atriaParam[2]/Rin) : P0;           // L - pressure RA
+    sysCircAlg[25] = max(0.,(sysCircAlg[13]-heartAlg[7])/sysCircAlg[14]);                                               // A16 - flow
+    P0 = (atriaParam[11]*heartAlg[9]+atriaParam[12])*(stateVars[16]-atriaParam[0])-atriaParam[2]*stateVars[25]+params[5];
+    Rin = Rparam[7];
+    heartAlg[8] = (pulCircAlg[1] > P0) ? (P0+atriaParam[2]*pulCircAlg[1]/Rin)/(1.+atriaParam[2]/Rin) : P0;             // L - pressure LA
+    pulCircAlg[4] = max((pulCircAlg[1]-heartAlg[8]),0.)/Rparam[7];
     // heart valves
     valveAlg[0]=pulCircAlg[0]+valveParam[28]*stateVars[23];   // M - proximal pulmonary pressure
     valveAlg[1]=sysCircAlg[0]+valveParam[29]*stateVars[27];   // M - proximal systemic pressure
@@ -560,10 +576,10 @@ void cardiovascular::getAlgebraicRelations() {
 }
 
 vector<double> cardiovascular::getTimeDerivative(vector<double> x) {
-    // vector<double> dvdt(x.size(), 0.);
     getVariablesFromState(x);
+    
     // systemic arteries circulation
-    dvdt[0] = stateVars[27] - sysCircAlg[1];          // A1 - volume
+    dvdt[0] = stateVars[27] - sysCircAlg[1];         // A1 - volume
 
     // systemic peripheral circulation
     dvdt[1] = sysCircAlg[28] - sysCircAlg[7];        // A4 - volume e
@@ -607,7 +623,6 @@ vector<double> cardiovascular::getTimeDerivative(vector<double> x) {
     
     dvdt[27] =getqValvedt(valveAlg[5],valveParam[21],valveParam[22],stateVars[27],valveParam[23],stateVars[28]);     // M - flow through AV
     dvdt[28] =getxiValvesdt(valveAlg[5],valveParam[24],valveParam[25],valveParam[26],valveParam[27],stateVars[28]);  // M - openning state xi AV
-
 
     return dvdt;
 }

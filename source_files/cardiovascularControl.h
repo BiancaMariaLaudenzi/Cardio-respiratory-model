@@ -78,9 +78,8 @@ class cardiovascularControl
         /**
          * @brief Common control params
          * - double paco2n [0] 
-         * - double caco2n [1]
          */
-        vector <double> commonControlParams = vector <double> (2);
+        vector <double> commonControlParams = vector <double> (1);
 
         //-----------------------------------------------------------------------------------
         // Local metabolic regulation
@@ -88,15 +87,14 @@ class cardiovascularControl
 
         /**
          * @brief Brain autoregulation parameters
-         * - double gbpn [0]
-         * - double gbo2 [1]
-         * - double cvbo2n [2] 
-         * - double A [3]
-         * - double B [4]
-         * - double CC [5]
-         * - double D [6]
+         * - double gbo2 [0]
+         * - double cvbo2n [1] 
+         * - double A [2]
+         * - double B [3]
+         * - double CC [4]
+         * - double D [5]
          */
-        vector <double> brainAutoParams = vector <double> (7);
+        vector <double> brainAutoParams = vector <double> (6);
 
         /**
          * @brief  Coronary autoregulation params
@@ -141,8 +139,9 @@ class cardiovascularControl
          * - double kdyn [5]
          * - double tauCAP [6]
          * - double tauccCO2dyn [7] 
+         * - double caco2n  [8]
          */
-        vector <double> chemoAfferentParams = vector <double> (8);
+        vector <double> chemoAfferentParams = vector <double> (9);
 
         /**
          * @brief vector containing lung stretch receptor parameters
@@ -420,9 +419,9 @@ class cardiovascularControl
          * - double pao2 [1]
          * - double sao2 [2]
          * - double caco2 [3]
-         * - double cbpo2 [4]
-         * - double chpo2 [5]
-         * - double cmpo2 [6]
+         * - double cbvo2 [4]
+         * - double chvo2 [5]
+         * - double cmvo2 [6]
          * - double dcaco2dt [7]
          */
         vector <double> varsTransport = vector <double> (8);

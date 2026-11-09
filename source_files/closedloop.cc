@@ -30,9 +30,17 @@
 #include <functional>
 #include <algorithm>
 #include "closedloop.h"
+#include <chrono>
 
 using namespace std;
 using std::scientific;
+
+bool hasNaN(const std::vector<double>& v) {
+    for (double val : v) {
+        if (std::isnan(val)) return true;
+    }
+    return false;
+}
 
 void closedloop::init(string ifile, int verbose) {
 	// verbose of each system
@@ -51,6 +59,9 @@ void closedloop::init(string ifile, int verbose) {
 	if (verbose){
 		// numerical method
 		cout << "method :" << method << endl;
+		cout << "nextConvCheck :" << nextConvCheck << endl;
+		cout << "windowConv :" << windowConv << endl;
+		cout << "tolConv :" << tolConv << endl;
 		// [conversions]
 		cout << "mmHgDyncm2 :" << mmHgDyncm2 << endl;
 		cout << "cmH2OmmHg :" << cmH2OmmHg << endl;
@@ -125,7 +136,6 @@ void closedloop::init(string ifile, int verbose) {
 			for (int i=9; i < 12; i++){
 				gas.CommonVars[i+1]=CVS.stateVars[i];
 			}
-			gas.CommonVars[12]+= CVS.TveinParam[4];
 			gas.CommonVars[13]=CVS.stateVars[13];
 			for (int i=7; i < 12; i++){
 				gas.CommonVars[i+7]=CVS.sysCircAlg[i];
@@ -133,12 +143,16 @@ void closedloop::init(string ifile, int verbose) {
 			for (int i=20; i < 25; i++){
 				gas.CommonVars[i-1]=CVS.sysCircAlg[i];
 			}
-			for (int i=26; i < 33; i++){
+			gas.CommonVars[24]=CVS.stateVars[6];
+			gas.CommonVars[25]=CVS.stateVars[7];
+			for (int i=28; i < 33; i++){
 				gas.CommonVars[i-2]=CVS.sysCircAlg[i];
 			}
 			for (int i=2; i < 4; i++){
 				gas.CommonVars[i+29]=CVS.pulCircAlg[i];
 			}
+			gas.CommonVars[33]=CVS.pulCircAlg[8];
+			gas.additionalRelations();	
 			if (doControlCardio){
 				controlCardio.init(ifileControlCardio, ifileCommon, pathResults);
 				// delayed quantities
@@ -152,17 +166,16 @@ void closedloop::init(string ifile, int verbose) {
 				delayedControlCardioList_1.push_back(controlCardio.algVarFiring[2]);
 				delayedControlCardioList_2.push_back(controlCardio.algVarFiring[0]);
 				delayedControlCardioList_4.push_back(controlCardio.algVarFiring[3]);
-				derivativeControlCardioList_0.push_back(gas.AlveoliLungsAlg[6]-controlCardio.commonControlParams[0]);
+				derivativeControlCardioList_0.push_back(gas.AlveoliLungsAlg[6]-controlCardio.chemoAfferentParams[8]);
 				derivativeControlCardioList_1.push_back(CVS.sysCircAlg[0]);
 				// from gas transport
 				controlCardio.varsTransport[0] = gas.AlveoliLungsAlg[8];
 				controlCardio.varsTransport[1] = gas.AlveoliLungsAlg[7];
-				gas.additionalRelations();
 				controlCardio.varsTransport[2] = gas.sao2;
 				controlCardio.varsTransport[3] = gas.AlveoliLungsAlg[6];
-				controlCardio.varsTransport[4] = gas.stateVars[14];
-				controlCardio.varsTransport[5] = gas.stateVars[12];
-				controlCardio.varsTransport[6] = gas.stateVars[10];
+				controlCardio.varsTransport[4] = gas.stateVars[24];
+				controlCardio.varsTransport[5] = gas.stateVars[22]; 
+				controlCardio.varsTransport[6] = gas.stateVars[20];
 				controlCardio.varsTransport[7] = 0.;
 				
 				// tidal volume 
@@ -256,7 +269,6 @@ void closedloop::exchangeInfo(){
 			for (int i=9; i < 12; i++){
 				gas.CommonVars[i+1]=CVS.stateVars[i];
 			}
-			gas.CommonVars[12]+= CVS.TveinParam[4];
 			gas.CommonVars[13]=CVS.stateVars[13];
 			for (int i=7; i < 12; i++){
 				gas.CommonVars[i+7]=CVS.sysCircAlg[i];
@@ -264,22 +276,25 @@ void closedloop::exchangeInfo(){
 			for (int i=20; i < 25; i++){
 				gas.CommonVars[i-1]=CVS.sysCircAlg[i];
 			}
-			for (int i=26; i < 33; i++){
+			gas.CommonVars[24]=CVS.stateVars[6];
+			gas.CommonVars[25]=CVS.stateVars[7];
+			for (int i=28; i < 33; i++){
 				gas.CommonVars[i-2]=CVS.sysCircAlg[i];
 			}
 			for (int i=2; i < 4; i++){
 				gas.CommonVars[i+29]=CVS.pulCircAlg[i];
 			}
+			gas.CommonVars[33]=CVS.pulCircAlg[8];
+			gas.additionalRelations();
 			if (doControlCardio){
 				// from gas transport
 				controlCardio.varsTransport[0] = gas.AlveoliLungsAlg[8];
 				controlCardio.varsTransport[1] = gas.AlveoliLungsAlg[7];
-				gas.additionalRelations();
 				controlCardio.varsTransport[2] = gas.sao2;
 				controlCardio.varsTransport[3] = gas.AlveoliLungsAlg[6];
-				controlCardio.varsTransport[4] = gas.stateVars[14];
-				controlCardio.varsTransport[5] = gas.stateVars[12];
-				controlCardio.varsTransport[6] = gas.stateVars[10];
+				controlCardio.varsTransport[4] = gas.stateVars[24];
+				controlCardio.varsTransport[5] = gas.stateVars[22]; 
+				controlCardio.varsTransport[6] = gas.stateVars[20];
 				
 				// tidal volume from lungMechanics
 				controlCardio.Vt = Vtidal;
@@ -320,25 +335,25 @@ vector<double> closedloop::getStateTimeDerivative(double time, vector< double> x
 	if (doLung){
 		i0 = CVS.stateVars.size();
 		i1 = i0 + lungs.vol.size();
-	vector<double> lungs_dvdt = lungs.getTimeDerivative(vector<double>(x.begin() + i0, x.begin() + i1));
+		vector<double> lungs_dvdt = lungs.getTimeDerivative(vector<double>(x.begin() + i0, x.begin() + i1));
 		for (int i =0; i <i1-i0;i++){
 			dxdt[i+i0]=lungs_dvdt[i];
 		}
-		if (doGas && time > tIniGas) {
+		if (doGas && gasActive) {
 			i0 = CVS.stateVars.size() + lungs.vol.size();
 			i1 = i0 + gas.stateVars.size();
 			vector<double> gas_dvdt = gas.getTimeDerivative(vector<double>(x.begin() + i0, x.begin() + i1));
 			for (int i =0; i <i1-i0;i++){
 				dxdt[i+i0]=gas_dvdt[i];
 			}
-			if (doControlCardio && time > tIniControl){
+			if (doControlCardio && controlActive){
 				i0 = CVS.stateVars.size() + lungs.vol.size()+ gas.stateVars.size();
 				i1 = i0 + controlCardio.stateVars.size();
 				vector<double> controlCardio_dvdt = controlCardio.getTimeDerivative(vector<double>(x.begin() + i0, x.begin() + i1));
 				for (int i =0; i <i1-i0;i++){
 					dxdt[i+i0]=controlCardio_dvdt[i];
 				}
-				if (doControlResp && time > tIniControl){
+				if (doControlResp && controlActive){
 					i0 = CVS.stateVars.size() + lungs.vol.size()+ gas.stateVars.size()+controlCardio.stateVars.size();
 					i1 = i0 + controlResp.stateVars.size();
 					vector<double> controlResp_dvdt = controlResp.getTimeDerivative(vector<double>(x.begin() + i0, x.begin() + i1));
@@ -353,29 +368,206 @@ vector<double> closedloop::getStateTimeDerivative(double time, vector< double> x
 }
 
 vector<double> closedloop::setStateFromVariables(){
-	vector<double> x0(0,0);
+	int totalSize = CVS.stateVars.size();
+	if (doLung) totalSize += lungs.vol.size();
+	if (doGas) totalSize += gas.stateVars.size();
+	if (doControlCardio) totalSize += controlCardio.stateVars.size();
+	if (doControlResp) totalSize += controlResp.stateVars.size();
+	vector<double> x0(totalSize);
+	int pos = 0;
 
-	// delayed quantities
-	timeList.push_back(time); // append time	
-	if (time > list_time){
-		// remove first element
-		timeList.pop_front(); 
-	}
-
-	int i0 = 0;
-	x0.insert(x0.begin()+i0, CVS.stateVars.begin(), CVS.stateVars.end());
+	copy(CVS.stateVars.begin(), CVS.stateVars.end(), x0.begin() + pos);
+	pos += CVS.stateVars.size();
 
 	if (doLung){
-
-		i0 = CVS.stateVars.size();
-		x0.insert(x0.begin()+i0, lungs.vol.begin(), lungs.vol.end());
+		copy(lungs.vol.begin(), lungs.vol.end(), x0.begin() + pos);
+    	pos += lungs.vol.size();
 
 		if (doGas){
+			copy(gas.stateVars.begin(), gas.stateVars.end(), x0.begin() + pos);
+        	pos += gas.stateVars.size();
+
+			if (doControlCardio){				
+				copy(controlCardio.stateVars.begin(), controlCardio.stateVars.end(), x0.begin() + pos);
+           		pos += controlCardio.stateVars.size();
+
+				if (doControlResp){
+					copy(controlResp.stateVars.begin(), controlResp.stateVars.end(), x0.begin() + pos);
+                	pos += controlResp.stateVars.size();
+				}
+			}
+		}
+	}
+	return x0;
+}
+
+void closedloop::setVariablesFromState(double time, const vector<double> x0){
+	int  i0 = 0;
+	int i1 = CVS.stateVars.size();
+	CVS.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
+	if (doLung){
+		i0 = CVS.stateVars.size();
+		i1 = i0 + lungs.vol.size();		
+		lungs.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
+		if (doGas){
+			i0 = CVS.stateVars.size() + lungs.vol.size();
+			i1 = i0 + gas.stateVars.size();
+			gas.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
+			if (doControlCardio){
+				i0 = CVS.stateVars.size() + lungs.vol.size() + gas.stateVars.size();
+				i1 = i0 + controlCardio.stateVars.size();
+				controlCardio.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
+				if (doControlResp){
+					i0 = CVS.stateVars.size() + lungs.vol.size() + gas.stateVars.size() + controlCardio.stateVars.size();
+					i1 = i0 + controlResp.stateVars.size();
+					controlResp.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
+				}
+			}
+		}
+	}
+	exchangeInfo();
+}
+
+void closedloop::Euler(double dt, double time, vector<double> x0, function<vector<double>(double, vector<double>)> fun){
+	vector <double> dvdt = fun(time, x0);
+	int ind_start = CVS.stateVars.size() + lungs.vol.size() + 4; 
+	int ind_end = CVS.stateVars.size() + lungs.vol.size() + gas.stateVars.size();
+	for (int i = 0; i < nVars; i++) {
+		x[i] += dt * dvdt[i];
+		if (i >= ind_start && i < ind_end) { // positive concentrations
+			if (x[i] < 0.) {
+				x[i] = 0.;
+			}
+		}
+	}
+} 
+
+void closedloop::Heun(double dt, double time, vector<double> x0, function<vector<double>(double, vector<double>)> fun){
+	int ind_start = CVS.stateVars.size() + lungs.vol.size() + 4; 
+	int ind_end = CVS.stateVars.size() + lungs.vol.size() + gas.stateVars.size();
+	vector<double> k1 = fun(time, x0);
+	vector <double> x1(nVars,0);
+	for (int i = 0; i < nVars; i++) {
+		x1[i] = x0[i] + dt * k1[i];
+		if (i >= ind_start && i < ind_end) { // positive concentrations
+			if (x1[i] < 0.) {
+				x1[i] = 0.;
+			}
+		}
+	}
+	vector<double> k2 = fun(time + dt, x1);
+	for (int i = 0; i < nVars; i++) {
+		x[i] = x0[i] + (dt / 2.) * (k1[i] + k2[i]);
+		if (i >= ind_start && i < ind_end) { // positive concentrations
+			if (x[i] < 0.) {
+				x[i] = 0.;
+			}
+		}
+	}
+}
+
+void closedloop::RK4(double dt, double time, vector<double> x0, function<vector<double>(double, vector<double>)> fun){
+	int ind_start = CVS.stateVars.size() + lungs.vol.size() + 4; 
+	int ind_end = CVS.stateVars.size() + lungs.vol.size() + gas.stateVars.size();
+	vector<double> k1 = fun(time, x0);
+	vector <double> x1(nVars,0);
+	for (int i = 0; i < nVars; i++) {
+		x1[i] = x0[i] + 0.5 * dt * k1[i];
+		if (i >= ind_start && i < ind_end) { // positive concentrations
+			if (x1[i] < 0.) {
+				x1[i] = 0.;
+			}
+		}
+	}
+	vector<double> k2 = fun(time + 0.5 * dt, x1);
+	vector <double> x2(nVars,0);
+	for (int i = 0; i < nVars; i++) {
+		x2[i] = x0[i] + 0.5 * dt * k2[i];
+		if (i >= ind_start && i < ind_end) { // positive concentrations
+			if (x2[i] < 0.) {
+				x2[i] = 0.;
+			}
+		}
+	}
+	vector<double> k3 = fun(time + 0.5 * dt, x2);
+	vector <double> x3(nVars,0);
+	for (int i = 0; i < nVars; i++) {
+		x3[i] = x0[i] + dt * k3[i];
+		if (i >= ind_start && i < ind_end) { // positive concentrations
+			if (x3[i] < 0.) {
+				x3[i] = 0.;
+			}
+		}
+	}
+	vector<double> k4 = fun(time + dt, x3);
+	for (int i = 0; i < nVars; i++) {
+		x[i] = x0[i] + (dt / 6.) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
+		if (i >= ind_start && i < ind_end) { // positive concentrations
+			if (x[i] < 0.) {
+				x[i] = 0.;
+			}
+		}
+	}
+}
+
+double closedloop::correctTimeLTS(double time, double tRef)
+{
+    double tAux = round(time/tRef)*tRef;
+    double tDiff = round(abs(tAux-time) * roundVal)/roundVal;
+    double timeCorrected;
+    if(tDiff<tol){
+      timeCorrected = double(static_cast<long long>(std::llround(time/tRef))) * tRef;
+    }
+    else{
+      timeCorrected = time;
+    }
+    return timeCorrected;
+}
+
+bool isConverged(const std::deque<double>& v1, const std::deque<double>& v2, double tol){
+    if (v1.empty() || v2.empty()) return false;
+
+    double sum1 = 0.0, sum2 = 0.0;
+    for (double val : v1) sum1 += val;
+    for (double val : v2) sum2 += val;
+    double mean1 = sum1 / v1.size();
+    double mean2 = sum2 / v2.size();
+    return fabs(mean2 - mean1)/fabs(mean1) < tol;
+}
+
+bool isConvergedMulti(const std::vector<std::deque<double>>& prev, const std::vector<std::deque<double>>& last, double tol){
+    for (size_t i = 0; i < prev.size(); i++)
+    {
+        if (!isConverged(prev[i], last[i], tol))
+            return false;  // one non-converged variable is enough
+    }
+    return true;
+}
+
+void closedloop::timeLoop(int verbose){
+	cout << "Start simulation time:: tIni = " << tIni << " s." << endl;
+	auto cpuStart = std::chrono::high_resolution_clock::now();
+	const double dtNominal = dt;
+	for(int iter = 0; iter < 1e11; iter++){
+		iT = iter;
+		if(timeStop - time < 0.5 * dtNominal){
+			break;
+		}
+		if(time+dt>timeStop){
+			dt = timeStop - time;
+		}
+		// delayed quantities
+		timeList.push_back(time); // append time	
+		if (time > list_time){
+			// remove first element
+			timeList.pop_front(); 
+		}
+		if(doGas) {
 			// delayed quantities
-			delayedGasList_0.push_back(gas.TissueVenousGasAlg[0]); 
-			delayedGasList_1.push_back(gas.TissueVenousGasAlg[1]); 
-			delayedGasList_2.push_back(max(gas.TissueVenousGasAlg[2],0.)); 
-			delayedGasList_3.push_back(max(gas.TissueVenousGasAlg[3],0.)); 
+			delayedGasList_0.push_back(gas.AlveoliLungsAlg[5]); 
+			delayedGasList_1.push_back(gas.AlveoliLungsAlg[6]); 
+			delayedGasList_2.push_back(max(gas.stateVars[26],0.)); 
+			delayedGasList_3.push_back(max(gas.stateVars[27],0.)); 
 			if (time > list_time){ 
 				// remove first element
 				delayedGasList_0.pop_front();
@@ -400,18 +592,14 @@ vector<double> closedloop::setStateFromVariables(){
 				gas.TissueVenousGasAlg[2] = gas.stateVars[26]; 
 				gas.TissueVenousGasAlg[3] = gas.stateVars[27]; 
 			}	
-
-			i0 = CVS.stateVars.size() + lungs.vol.size();
-			x0.insert(x0.begin()+i0, gas.stateVars.begin(), gas.stateVars.end());
-
+			gas.updateFlowFilter(dt);
 			if (doControlCardio){
-
 				// delayed quantities
 				delayedControlCardioList_0.push_back(controlCardio.algVarFiring[1]);
 				delayedControlCardioList_1.push_back(controlCardio.algVarFiring[2]); 
 				delayedControlCardioList_2.push_back(controlCardio.algVarFiring[0]); 
 				delayedControlCardioList_4.push_back(controlCardio.algVarFiring[3]);
-				derivativeControlCardioList_0.push_back(gas.AlveoliLungsAlg[6]-controlCardio.commonControlParams[0]);
+				derivativeControlCardioList_0.push_back(gas.AlveoliLungsAlg[6]-controlCardio.chemoAfferentParams[8]);
 				derivativeControlCardioList_1.push_back(CVS.sysCircAlg[0]);
 				if (time > list_time) {
 					delayedControlCardioList_0.pop_front();
@@ -423,9 +611,9 @@ vector<double> closedloop::setStateFromVariables(){
 				}
 				// interpolation for delayed quantities
 				if (time > controlCardio.resControlParams[4]){
-					controlCardio.delayedVars[0] = interpolate(timeList,delayedControlCardioList_0, time-controlCardio.resControlParams[4], false);
+					controlCardio.delayedVars[0] = interpolate(timeList,delayedControlCardioList_0, time-controlCardio.resControlParams[3], false);
 					controlCardio.delayedVars[1] = interpolate(timeList,delayedControlCardioList_0, time-controlCardio.resControlParams[4], false); 
-					controlCardio.delayedVars[2] = interpolate(timeList,delayedControlCardioList_0, time-controlCardio.resControlParams[4], false); 
+					controlCardio.delayedVars[2] = interpolate(timeList,delayedControlCardioList_0, time-controlCardio.resControlParams[5], false); 
 				}
 				else {
 					controlCardio.delayedVars[0] = 0.;
@@ -433,9 +621,9 @@ vector<double> closedloop::setStateFromVariables(){
 					controlCardio.delayedVars[2] = 0.;
 				}
 				if (time > controlCardio.vuControlParams[4]){
-					controlCardio.delayedVars[3] = interpolate(timeList,delayedControlCardioList_1, time-controlCardio.vuControlParams[4], false); 
+					controlCardio.delayedVars[3] = interpolate(timeList,delayedControlCardioList_1, time-controlCardio.vuControlParams[3], false); 
 					controlCardio.delayedVars[4] = interpolate(timeList,delayedControlCardioList_1, time-controlCardio.vuControlParams[4], false); 
-					controlCardio.delayedVars[5] = interpolate(timeList,delayedControlCardioList_1, time-controlCardio.vuControlParams[4], false);
+					controlCardio.delayedVars[5] = interpolate(timeList,delayedControlCardioList_1, time-controlCardio.vuControlParams[5], false);
 				}
 				else {
 					controlCardio.delayedVars[3] = 0.;
@@ -444,7 +632,7 @@ vector<double> closedloop::setStateFromVariables(){
 				}
 				if (time > controlCardio.heartControlParams[2]){
 					controlCardio.delayedVars[6] = interpolate(timeList,delayedControlCardioList_2, time-controlCardio.heartControlParams[2], false);
-					controlCardio.delayedVars[7] = interpolate(timeList,delayedControlCardioList_2, time-controlCardio.heartControlParams[2], false);  
+					controlCardio.delayedVars[7] = interpolate(timeList,delayedControlCardioList_2, time-controlCardio.heartControlParams[3], false);  
 				}
 				else {
 					controlCardio.delayedVars[6] = 0.;
@@ -493,12 +681,7 @@ vector<double> closedloop::setStateFromVariables(){
 						timeVolList.pop_front();
 					}
 				}
-				
-				i0 = CVS.stateVars.size() + lungs.vol.size()+gas.stateVars.size();
-				x0.insert(x0.begin()+i0, controlCardio.stateVars.begin(), controlCardio.stateVars.end());
-
 				if (doControlResp){
-
 					// delayed quantities
 					delayedControlRespList_0.push_back(controlCardio.varsTransport[0]);
 					delayedControlRespList_1.push_back(controlCardio.algVarChemo[4]);
@@ -520,83 +703,12 @@ vector<double> closedloop::setStateFromVariables(){
 					else {
 						controlResp.delayedVars[1] = 0.;
 					}
-
-					i0 = CVS.stateVars.size() + lungs.vol.size()+gas.stateVars.size()+controlCardio.stateVars.size();
-					x0.insert(x0.begin()+i0, controlResp.stateVars.begin(), controlResp.stateVars.end());
 				}
 			}
-		}
-	}
-	return x0;
-}
-
-void closedloop::setVariablesFromState(double time, const vector<double> x0){
-	int  i0 = 0;
-	int i1 = CVS.stateVars.size();
-	CVS.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
-	if (doLung){
-		i0 = CVS.stateVars.size();
-		i1 = i0 + lungs.vol.size();		
-		lungs.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
-		if (doGas){
-			i0 = CVS.stateVars.size() + lungs.vol.size();
-			i1 = i0 + gas.stateVars.size();
-			gas.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
-			if (doControlCardio){
-				i0 = CVS.stateVars.size() + lungs.vol.size() + gas.stateVars.size();
-				i1 = i0 + controlCardio.stateVars.size();
-				controlCardio.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
-				if (doControlResp){
-					i0 = CVS.stateVars.size() + lungs.vol.size() + gas.stateVars.size() + controlCardio.stateVars.size();
-					i1 = i0 + controlResp.stateVars.size();
-					controlResp.getVariablesFromState(vector<double>(x0.begin() + i0, x0.begin() + i1));
-				}
-			}
-		}
-	}
-	exchangeInfo();
-}
-
-void closedloop::Euler(double dt, double time, const vector<double> x0, function<vector<double>(double, vector<double>)> fun){
-	vector <double> dvdt = fun(time, x0);
-	for (int i = 0; i < nVars; i++) {
-		x[i] += dt * dvdt[i];
-	}
-} 
-
-void closedloop::RK4(double dt, double time, const vector<double> x0, function<vector<double>(double, vector<double>)> fun){
-	vector<double> k1 = fun(time, x0);
-	vector <double> x1(nVars,0);
-	for (int i = 0; i < nVars; i++) {
-		x1[i] = x0[i] + 0.5 * dt * k1[i];
-	}
-	vector<double> k2 = fun(time + 0.5 * dt, x1);
-	vector <double> x2(nVars,0);
-	for (int i = 0; i < nVars; i++) {
-		x2[i] = x0[i] + 0.5 * dt * k2[i];
-	}
-	vector<double> k3 = fun(time + 0.5 * dt, x2);
-	vector <double> x3(nVars,0);
-	for (int i = 0; i < nVars; i++) {
-		x3[i] = x0[i] + dt * k3[i];
-	}
-	vector<double> k4 = fun(time + dt, x3);
-	for (int i = 0; i < nVars; i++) {
-		x[i] = x0[i] + (dt / 6.) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
-	}
-}
-
-void closedloop::timeLoop(int verbose){
-	cout << "Start simulation time:: tIni = " << tIni << " s." << endl;
-	for(int iter = 0; iter < 1000000000; iter++){
-		iT = iter;
-		if(time+dt>timeStop){
-			dt = timeStop - time;
-		}
-		if(abs(time - timeStop) <= 1e-6){
-			break;
 		}
 		// update
+		gasActive = doGas && time >= tIniGas - 0.5 * dt;
+		controlActive = gasActive && time >= tIniControl - 0.5 * dt;
 		x = setStateFromVariables();
 		auto Fun = [this](double t, vector< double> x) {
 			return this -> getStateTimeDerivative(t, x);
@@ -604,25 +716,42 @@ void closedloop::timeLoop(int verbose){
 		if (method == 0) {		
 			Euler(dt, time, x, Fun);
 		}		
-		if (method == 1) {
+		if (method == 2) {
 			RK4(dt, time, x, Fun);
 		}
+		if (method == 1) {
+			Heun(dt, time, x, Fun);
+		}
 		// update times
-		time += dt;                 //global
-		CVS.time += dt;
+		time += dt;  //global
+		time = correctTimeLTS(time, dt);
+		CVS.time = time;
 		if (doLung){
-			lungs.time += dt;
+			lungs.time = time;
 			if (doGas){
-				gas.time += dt;
+				gas.time = time;
 				if (doControlCardio){
-					controlCardio.time += dt;
+					controlCardio.time = time;
 					if (doControlResp){
-						controlResp.time += dt;
+						controlResp.time = time;
 					}
 				}
 			}
 		}
 		setVariablesFromState(time, x);
+		// NaN check
+		if (hasNaN(x)) {
+			cout << "NaN detected at time = " << time << " s" << endl;
+
+			// write the time of the NaN
+			std::ofstream fout(pathResults + "/nan_detected.txt");
+			if (fout.is_open()) {
+				fout << "NaN detected at time = " << time << " s\n";
+				fout.close();
+			}
+
+			exit(EXIT_FAILURE);  // stop the simulation
+		}
 
 		// save each dtSample
 		int sampleNow = 0;
@@ -657,9 +786,72 @@ void closedloop::timeLoop(int verbose){
 				}
 			}
 		}			
+		if (sampleNow == 1) {
 
+            // --- data collection (every sample) ---
+            buffersLast60[0].push_back(CVS.sysCircAlg[0]);   // Systemic arterial pressure
+            buffersLast60[1].push_back(CVS.sysCircAlg[13]);  // Central venous pressure
+            buffersLast60[2].push_back(CVS.stateVars[27]);   // Flow through aortic valve - CO
+            if (doControlCardio) {
+                buffersLast60[3].push_back(controlCardio.controlledVars[8]); // Heart period
+            }
+            if (doGas) {
+                buffersLast60[4].push_back(gas.AlveoliLungsAlg[7]); // PaO2
+                buffersLast60[5].push_back(gas.AlveoliLungsAlg[8]); // PaCO2
+            }
+            const int maxSamples = int(windowConv / dtSample);
+
+            // --- sliding windows ---
+            for (size_t i = 0; i < buffersLast60.size(); i++) {
+                if (buffersLast60[i].size() > maxSamples) {
+                    double moved = buffersLast60[i].front();
+                    buffersLast60[i].pop_front();
+                    buffersPrev60[i].push_back(moved);
+                    if (buffersPrev60[i].size() > maxSamples) {
+                        buffersPrev60[i].pop_front();
+                    }
+                }
+            }
+            // --- convergence check (at the end of each window) ---
+            if (time >= nextConvCheck) {
+                if (buffersPrev60[0].size() == maxSamples && buffersLast60[0].size() == maxSamples) {
+                    std::vector<std::deque<double>> activePrev;
+                    std::vector<std::deque<double>> activeLast;
+                    for (size_t i = 0; i < buffersLast60.size(); i++) {
+                        if (!buffersLast60[i].empty()) { 
+                            activePrev.push_back(buffersPrev60[i]);
+                            activeLast.push_back(buffersLast60[i]);
+                        }
+                    }
+                    if (isConvergedMulti(activePrev, activeLast, tolConv)) {
+                        auto cpuEnd = std::chrono::high_resolution_clock::now();
+                        std::chrono::duration<double> elapsed = cpuEnd - cpuStart;
+                        cout << "\n*** MODEL CONVERGED AT t = " << time << " s ***" << endl;
+                        cout << "CPU time to reach convergence: " << elapsed.count() << " s." << endl;
+                        
+                        // --- write to file ---
+                        std::string fileConv = pathResults + "/convergence_report.txt";
+                        std::ofstream fout(fileConv, std::ios::out);
+
+                        if (fout.is_open()) {
+                            fout << "*** MODEL CONVERGED ***\n";
+                            fout << "Convergence tolerance = " << tolConv << "\n";
+                            fout << "Convergence window = " << windowConv << " s\n";
+                            fout << "Numerical method = " << method << "\n";
+                            fout << "Time step = " << dt << " s\n";
+                            fout << "Convergence time = " << time << " s\n";
+                            fout << "CPU time = " << elapsed.count() << " s\n";
+                            fout.close();
+                        }
+                        
+                        break; 
+                    }
+                }
+                nextConvCheck += windowConv; // next check after windowConv
+            }
+        }
 		// correct time each dtSample
-		time = double(int(round(time/dt)))*dt;
+		time = double(static_cast<long long>(std::llround(time/dt))) * dt;
 	}
 	cout << "Results sampled from " << tSampleIni << " s to " << tSampleEnd << " s, each " << dtSample << " s." << endl;
 	cout << "Final simulation time:: tEnd = " << time << " s." << endl;
@@ -685,7 +877,7 @@ void closedloop::readParams(string _file, int verbose) {
 	// 	status = mkdir(pathResults.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);  //ubuntu
 	// #endif
 	
-    if (status != 0 and verbose)
+    if (status != 0 && verbose)
 		cout << "Model1d::init() could not create folder for results "
 				<< endl;
 
@@ -697,7 +889,11 @@ void closedloop::readParams(string _file, int verbose) {
 	ifileControlCardio = ifile("controlCardioParams/controlCardioParams", "noCardioControlFile");
 	ifileControlResp = ifile("controlRespParams/controlRespParams", "noRespControlFile");
 	// [method]
-	method = ifile("methods/method", 1);
+	method = ifile("methods/method", 2);  // 0 = Euler, 1 = Heun, 2 = RK4
+	// [convergence]
+	nextConvCheck = ifile("convergence/nextConvCheck", 120.);
+	windowConv = ifile("convergence/windowConv", 60.);
+	tolConv = ifile("convergence/tolConv", 1e-3);
 	// [conversions]
 	mmHgDyncm2 = ifile("conversions/mmHgDyncm2", 0.);
 	cmH2OmmHg = ifile("conversions/cmH2OmmHg", 0.);
@@ -716,6 +912,13 @@ void closedloop::readParams(string _file, int verbose) {
 	doGas = ifile("systems/doGas", 0);
 	doControlCardio = ifile("systems/doControlCardio", 0);
 	doControlResp = ifile("systems/doControlResp", 0);
+	if (!doControlCardio) {
+		string ifileCommonNoControl = ifile("commonParams/commonParamsNoControl", "noCommonNoControlFile");
+		if (ifileCommonNoControl != "noCommonNoControlFile")
+			ifileCommon = ifileCommonNoControl;
+		if (verbose)
+			cout << " -- doControlCardio = 0: common parameters read from " << ifileCommon << endl;
+	}
 	// [toSample]
 	roundVal = ifile("toSample/roundVal", 0.);
 	tol = ifile("toSample/tol", 0.);

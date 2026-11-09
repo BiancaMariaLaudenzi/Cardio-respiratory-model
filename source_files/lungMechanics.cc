@@ -100,7 +100,6 @@ void lungMechanics::readLungMechParameters(string _file, string _fileC) {
 	C[2] = ifile("compliances/cb", 0.0131);
 	C[3] = ifile("compliances/cA", 0.2);
 	C[4] = ifile("compliances/ccw", 0.2445);
-	C[5] = ifile("compliances/cabd", 0.183);
 
 	// [unstressed volumes]
 	Vu[0] = ifile("unstressed_volumes/vul", 34.4);
@@ -117,19 +116,18 @@ void lungMechanics::readLungMechParameters(string _file, string _fileC) {
 	R[0] = ifile("resistances/rml", 1.021);
 	R[1] = ifile("resistances/rlt", 0.3369);
 	R[2] = ifile("resistances/rtb", 0.3063);
-	R[3] = ifile("resistances/rbA", 0.0817);
+	R[3] = ifile("resistances/rba", 0.0817);
 
 	// respiratory params
-	resp[0] = ifileC("lungMechanics/rr", 12.);
+	resp[0] = ifileC("lungMechanics_and_cardiorespiratoryControl/rr0", 12.);
 	resp[1] = ifile("respiratory/ieratio", 0.6);
-	resp[2] = ifile("respiratory/frc", 2.4);
-	resp[3] = ifileC("pleuralPressure/pl", -5.);
-	resp[4] = ifileC("lungMechanics/pmusmin", -5.);
+	resp[3] = ifileC("cardiovascular_and_lungMechanics/plee", -5.);
+	resp[4] = ifileC("lungMechanics_and_cardiorespiratoryControl/pmusmin0", -5.);
 	resp[5] = ifile("respiratory/tauCoeff", 0.2);
 	resp[6] = ifile("respiratory/pao", 0.);
-	resp[7] = ifile("respiratory/pvent", 0.);
-	resp[8] = ifile("respiratory/patm", 0.);
-	resp[9] = ifile("respiratory/IAPee", 2.45);	
+
+	C[5] = ifile("abdominal/cabd", 0.183);
+	resp[9] = ifile("abdominal/IAPee", 2.45);	
 
 	if (verbose)
 		printLungMechParameters();
@@ -149,8 +147,6 @@ void lungMechanics::printLungMechParameters() {
 	cout << "cb = " << C[2] << endl;
 	cout << "cA = " << C[3] << endl;
 	cout << "ccw = " << C[4] << endl;
-	cout << "cabd = " << C[5] << endl;
-
 
 	cout << "[unstressed volumes]" << endl;
 	cout << "vul = " << Vu[0] << endl;
@@ -163,20 +159,16 @@ void lungMechanics::printLungMechParameters() {
 	cout << "rml = " << R[0] << endl;
 	cout << "rlt = " << R[1] << endl;
 	cout << "rtb = " << R[2] << endl;
-	cout << "rbA = " << R[3] << endl;
+	cout << "rba = " << R[3] << endl;
 
 
 	cout << "[respiratory params]" << endl;
-	cout << "rr = " << resp[0] << endl;
+	cout << "rr0 = " << resp[0] << endl;
 	cout << "ieratio = " << resp[1] << endl;
-	cout << "frc = " << resp[2] << endl;
 	cout << "pplee = " << resp[3] << endl;
-	cout << "pmusmin = " << resp[4] << endl;
+	cout << "pmusmin0 = " << resp[4] << endl;
 	cout << "tauCoeff = " << resp[5] << endl;
 	cout << "pao = " << resp[6] << endl;
-	cout << "pvent = " << resp[7] << endl;
-	cout << "patm = " << resp[8] << endl;
-	cout << "IAPee= "  << resp[9] << endl;
 	
 }
 

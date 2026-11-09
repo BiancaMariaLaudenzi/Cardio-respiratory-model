@@ -93,6 +93,7 @@ void gasTransport::init(string ifile, string ifileC, string outDir) {
                     << "[11]: mdoto2;" << " "
                     << "[12]: mdotco2;" << " "
 					<< "[13]: pAo2;" << " "
+					<< "[14]: sao2;" << " "
 					<< "\n";
 
 
@@ -137,7 +138,6 @@ void gasTransport::readGASparameters(string _file, string _fileC) {
     LungsGasParams[12] = ifile("LungsGas/beta2",0.);
     LungsGasParams[13] = ifile("LungsGas/k1",0.);
     LungsGasParams[14] = ifile("LungsGas/k2",0.);
-	LungsGasParams[15] = ifileC("shunt/sh", 0.);
 	LungsGasParams[16] = ifile("LungsGas/hgb", 0.);
 	LungsGasParams[17] = ifile("LungsGas/kO2", 0.);
 	LungsGasParams[18] = ifile("LungsGas/kCO2", 0.);
@@ -298,16 +298,12 @@ void gasTransport::getAlgebraicRelations() {
 	AlveoliLungsAlg[2] = max(stateVars[3], 0.)*(LungsGasParams[3] - LungsGasParams[4]); // A53 - pAco2
 
 	tie(AlveoliLungsAlg[3], AlveoliLungsAlg[4]) = invertedDissociation(stateVars[4], stateVars[5]); // pppo2,pppco2
-
-	double denom = CommonVars[31] + CommonVars[32];
-	if (denom != 0) {
-		AlveoliLungsAlg[5] = max((CommonVars[31]*stateVars[4] + CommonVars[32]*TissueVenousGasAlg[2]) / denom, 0.); //A54 - cao2
-		AlveoliLungsAlg[6] = max((CommonVars[31]*stateVars[5] + CommonVars[32]*TissueVenousGasAlg[3]) / denom, 0.); //A55 - caco2
-	} else {
-		AlveoliLungsAlg[5] = 0.;  
-		AlveoliLungsAlg[6] = 0.;  
-	}
-
+	
+    double denom_filt = qpp_filt + qps_filt;
+    if (denom_filt > 0.001) {
+        AlveoliLungsAlg[5] = (qpp_filt * stateVars[4] + qps_filt * TissueVenousGasAlg[2]) / denom_filt; 
+        AlveoliLungsAlg[6] = (qpp_filt * stateVars[5] + qps_filt * TissueVenousGasAlg[3]) / denom_filt; 
+    }
 
 	tie(AlveoliLungsAlg[7], AlveoliLungsAlg[8]) = invertedDissociation(AlveoliLungsAlg[5], AlveoliLungsAlg[6]); //pao2,paco2
 	
@@ -329,8 +325,8 @@ vector<double> gasTransport::getTimeDerivative(vector<double> x) {
 	dvdt[1] = 1. / CommonVars[0]*(AlveoliLungsAlg[0] * CommonVars[1]*(LungsGasParams[1] - max(stateVars[1], 0.)) + AlveoliLungsAlg[1] * CommonVars[2]*(max(stateVars[1], 0.) - max(stateVars[3], 0.))); // A43
 	dvdt[2] = 1. / CommonVars[3]*(AlveoliLungsAlg[0] * CommonVars[2]*(max(stateVars[0], 0.) - max(stateVars[2], 0.)) - LungsGasParams[2] * (AlveoliLungsAlg[10])); // A44
 	dvdt[3] = 1. / CommonVars[3]*(AlveoliLungsAlg[0] * CommonVars[2]*(max(stateVars[1], 0.) - max(stateVars[3], 0.)) - LungsGasParams[2] * (AlveoliLungsAlg[11]));  // A45
-	dvdt[4] = 1. / CommonVars[13]*(CommonVars[31]*(TissueVenousGasAlg[2] - stateVars[4]) + AlveoliLungsAlg[10]);
-	dvdt[5] = 1. / CommonVars[13]*(CommonVars[31]*(TissueVenousGasAlg[3] - stateVars[5]) + AlveoliLungsAlg[11]);
+	dvdt[4] = 1. / CommonVars[13]*(CommonVars[33]*(TissueVenousGasAlg[2] - stateVars[4]) + AlveoliLungsAlg[10]);
+	dvdt[5] = 1. / CommonVars[13]*(CommonVars[33]*(TissueVenousGasAlg[3] - stateVars[5]) + AlveoliLungsAlg[11]);
 
 	// tissue gas exchange
 	dvdt[6] = 1. / (TissuesVenousGasParam[0] + CommonVars[4])*(CommonVars[26]*(TissueVenousGasAlg[0] - max(stateVars[6], 0.)) - TissuesVenousGasParam[1]); // A63
@@ -362,6 +358,16 @@ vector<double> gasTransport::getTimeDerivative(vector<double> x) {
 	return dvdt;
 }
 
+void gasTransport::updateFlowFilter(double dt) {
+	double qpp = fmax(CommonVars[31],0.);
+	double qps = fmax(CommonVars[32],0.);
+	double alpha = dt / (dt + tauFlowFilter);
+	if (qpp_filt == 0.0 && qpp != 0.0) qpp_filt = qpp;
+	if (qps_filt == 0.0 && qps != 0.0) qps_filt = qps;
+	qpp_filt = alpha * qpp + (1.0 - alpha) * qpp_filt;
+	qps_filt = alpha * qps + (1.0 - alpha) * qps_filt;
+}
+
 void gasTransport::additionalRelations() {
 	sao2 = (AlveoliLungsAlg[5] - AlveoliLungsAlg[9])/LungsGasParams[16]/1.34; // A56;
 }
@@ -388,6 +394,7 @@ void gasTransport::output(){
 	for (int i = 0; i < AlveoliLungsAlg.size(); i++) {
 		sampleGASalveoliLungsAlg << AlveoliLungsAlg[i] << " ";
 	}
+	sampleGASalveoliLungsAlg << sao2 << " ";
 	sampleGASalveoliLungsAlg << "\n";
 	sampleGASalveoliLungsAlg.flush();
 	

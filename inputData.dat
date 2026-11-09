@@ -1,19 +1,24 @@
 ﻿//// Set the following parameters to run a new simulation:: ////
 
 [methods]
-method = 1;              // Numerical method:: 1 for Runge-Kutta order 4; 0 for Euler.
+method = 2;              // Numerical method:: 0 for Euler; 1 for Heun; 2 for Runge-Kutta order 4.
+
+[convergence]
+nextConvCheck = 120.;
+windowConv = 60.;
+tolConv = 0.01;
 
 [timeParams]
 tIni = 0.;              // Simulation initial time;
 tIniGas = 20.;          // Initial time for gas transport; 
-tIniControl = 3.        // Initial time for controls -> anyway the controls start after tIniGas;
+tIniControl = 3.;       // Initial time for controls -> anyway the controls start after tIniGas;
 timeStop = 2000.;        // Simulation end time; 
-tSampleIni = 1940.;       // Sampling initial time;
+tSampleIni = 0.;        // Sampling initial time;
 tSampleEnd = 2000.;      // Sampling final time;
 dtSample = 1e-2;        // Sampling time step;
-dt = 5e-5;              // Numerical method time step.
+dt = 2e-4;              // Numerical method time step.
 
-// IMPORTANT NOTE: the activation of each system is sequential (cardiovascular system always activated -> doLung -> doGas -> doControl -> doControlResp).
+// IMPORTANT NOTE: the selection of each system is sequential (cardiovascular system always activated -> doLung -> doGas -> doControl -> doControlResp).
 //                 For example, it is not possible to activate doGas and disactivate doLung.
 [systems]
 doLung = 1;             // 1 for activating lung mechanics system; 0 to disactivate;
@@ -22,24 +27,23 @@ doControlCardio = 1;    // 1 for activating cardiovascular control system; 0 to 
 doControlResp = 1;      // 1 for activating ventilatory control system; 0 to disactivate;
 
 [folders]
-pathResults = ./test_results/    // path to save results.
-
-
+pathResults = ./test_results/   // path to save results.
 
 //// Leave the following parameters unchanged:: ////
 
 [cardioParams]
-cardioParams = params/cardiovascular.dat
+cardioParams = baseline/cardiovascular.dat
 [lungParams]
-lungParams = params/lungMechanics.dat
+lungParams = baseline/lungMechanics.dat
 [gasParams]
-gasParams = params/transport.dat
+gasParams = baseline/transport.dat
 [controlCardioParams]
-controlCardioParams = params/cardiovascularControl.dat
+controlCardioParams = baseline/cardiovascularControl.dat
 [controlRespParams]
-controlRespParams = params/respiratoryControl.dat
+controlRespParams = baseline/respiratoryControl.dat
 [commonParams]
-commonParams = params/commonParams.dat
+commonParams = baseline/commonParams.dat
+commonParamsNoControl = baseline/commonParams_noControl.dat   // used automatically if doControlCardio = 0
 
 [conversions]
 mmHgDyncm2 = 1333.22368;
@@ -49,3 +53,4 @@ LmL = 1000.;
 [toSample]
 roundVal = 1e12;
 tol = 1e-8;
+

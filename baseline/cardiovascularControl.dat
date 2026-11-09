@@ -1,0 +1,153 @@
+[brainAutoParams]
+gbo2 = 10.;
+cvbo2n = 0.14; 
+Ab = 20.9;
+Bb = 92.8;
+Cb = 10570.;
+Db = -5.251;
+
+[coroAutoParams]
+gho2 = 35.;
+cvho2n = 0.11; 
+khco2 = 11.11; 
+
+[muscleAutoParams]
+gmo2 = 30.;
+cvmo2n = 0.155; 
+kmco2 = 142.8; 
+
+[commonAutoParams]
+tauo2A = 10.; 
+tauco2A = 20.; 
+
+[baroAfferentParam]
+tauzB = 6.37; 
+taupB = 2.076; 
+fabmin = 2.52; 
+fabmax = 47.78; 
+pn = 92.; 
+kab = 11.76; 
+
+[chemoAfferentParam]
+Ac = 600.; 
+Bc = 10.18;  
+kco2 = 1.; 
+ko2 = 200.;
+kstat = 20.; 
+kdyn = 45.; 
+tauCAP = 3.5; 
+tauccCO2dyn = 600.; 
+caco2n = 0.36;
+
+[lsrAfferentParam]
+gap = 12.; 
+tauLSR = 2.; 
+
+[efferentSympParams]
+fesinf = 2.1; 
+fes0 = 16.11; 
+fesmax = 60.; 
+kes = 0.0675; 
+Wbsh = -1.75;
+Wbsp = -1.1375;
+Wbsv = -1.1375;
+Wcsh = 1.;
+Wcsp = 1.56;
+Wcsv = 1.56;
+Wpsh = 0.;
+Wpsp = -0.4250;
+Wpsv = -0.4250;
+
+[efferentVagalParams]
+fevinf = 6.3; 
+fev0 = 3.2; 
+fab0 = 25.;
+kev = 7.06; 
+Wcv = 0.208; 
+Wpv = -0.103;
+thetav = -0.68; 
+
+[CNShypoxixResponseParam]
+chish = 53.; 
+chisp = 6.; 
+chisv = 6.; 
+Ptildeo2sh = 45.; 
+Ptildeo2sp = 30.; 
+Ptildeo2sv = 30.; 
+kiscsh = 6.; 
+kiscsp = 2.; 
+kiscsv = 2.; 
+tauisc = 30.; 
+taucc = 20.; 
+thetashn = 3.6; 
+thetaspn = 13.32; 
+thetasvn = 13.32; 
+gccsh = 1.; 
+gccsp = 1.5; 
+gccsv = 0.; 
+
+[resistanceControlParams]
+Grmp = 2.47; 
+Grsp = 0.695; 
+Grep = 1.94; 
+Drmp = 2.; 
+Drsp = 2.;
+Drep = 2.; 
+fesmin = 2.66; 
+taurmp = 6.; 
+taursp = 6.; 
+taurep = 6.; 
+
+[vuControlParams]
+Gvumv = -58.29; 
+Gvusv = -265.4;
+Gvuev = -74.21; 
+Dvumv = 5.;
+Dvusv = 5.;
+Dvuev = 5.; 
+tauvumv = 20.;
+tauvusv = 20.; 
+tauvuev = 20.;
+
+[heartControlParams]
+Gemaxlv = 0.475; 
+Gemaxrv = 0.282; 
+Demaxlv = 2.; 
+Demaxrv = 2.; 
+tauemaxlv = 8.;
+tauemaxrv = 8.;
+GTs = -0.13;
+DTs = 2.; 
+tauTs = 2.; 
+GTv = 0.09; 
+DTv = 0.2; 
+tauTv = 1.5; 
+
+[ics]
+ptilde =  306.8401 ;
+phiapc =  0.;
+fap =  0.;
+deltathetao2sp =  0.;
+deltathetao2sv =  0.;
+deltathetao2sh =  0.;
+deltathetaco2sp =  0.;
+deltathetaco2sv =  0. ;
+deltathetaco2sh = 0.;
+deltarsp =  0.;
+deltarep =  0.;
+deltarmp =  0.;
+deltavusv =  0.;
+deltavuev =  0.;
+deltavumv =  0.;
+deltaemaxlv =  0.;
+deltaemaxrv =  0.;
+deltats =  0.;
+deltatv =  0.;
+xbo2 =  0.;
+xbco2 =  0.;
+xho2 =  0.;
+xmo2 =  0.;
+xhco2 =  0.;
+xmco2 =  0.;
+phiCO2dyn =  82.2871;
+fapc = 0.;

@@ -24,8 +24,8 @@ CPPFLAGS= -O3
 # macros
 RM = rm -f
 
-# You have to modify this dsirectory!!!
-DIRSOURCE=../source_files
+# You have to modify this directory!!!
+DIRSOURCE=./source_files
 # libraries
 LIBDEPS = $(DIRSOURCE)/libcardiorespsolver.a
 LDFLAGS = $(DIRSOURCE)/libcardiorespsolver.a -lm 

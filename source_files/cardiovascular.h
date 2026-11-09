@@ -320,6 +320,15 @@ class cardiovascular
      */
     vector<double> valveParam = vector<double>(34);     
     
+    double MstTV;
+    double MrgTV;
+    double MstPV;
+    double MrgPV;
+    double MstMV;
+    double MrgMV;
+    double MstAV;
+    double MrgAV;
+    
     /**
       * @brief Vector of 6 components that contains additional parameters
       * 

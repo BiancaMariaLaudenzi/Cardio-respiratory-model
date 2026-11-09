@@ -90,14 +90,14 @@ void respiratoryControl::readRespControlParameters(string _file, string _fileC){
     Params[9] = ifile("central/Gca1", 850.);
     Params[10] = ifile("central/Gca2", 0.);
     Params[11] = ifile("central/Gcf1", 0.9);
-    Params[12] = ifile("central(Gcf2", 0.);
+    Params[12] = ifile("central/Gcf2", 0.);
     Params[13] = ifile("central/tauca1", 105.);
     Params[14] = ifile("central/tauca2", 30.);
     Params[15] = ifile("central/taucf1", 400.);
     Params[16] = ifile("central/taucf2", 35.);
-    Params[17] = ifileC("cardiorespiratoryControl/paco2n", 40.);
-    Params[18] = ifileC("lungMechanics/pmusmin", -5.);
-    Params[19] = ifileC("lungMechanics/rr", 12.);
+    Params[17] = ifileC("cardiovascularControl_and_cardiorespiratoryControl/paco2n", 40.);
+    Params[18] = ifileC("lungMechanics_and_cardiorespiratoryControl/pmusmin0", -5.);
+    Params[19] = ifileC("lungMechanics_and_cardiorespiratoryControl/rr0", 12.);
 
     if (verbose)
 		printRespControlParameters();
@@ -186,6 +186,7 @@ void respiratoryControl::getVariablesFromState(vector<double> x) {
     }
     getAlgebraicRelations();
 }
+
 
 void respiratoryControl::output(){
     sampleStateVars << scientific << setprecision(12) << time << " "

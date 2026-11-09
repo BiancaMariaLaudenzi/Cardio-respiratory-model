@@ -146,33 +146,30 @@ void cardiovascularControl::readCardioControlParameters(string _file, string _fi
 	GetPot ifile(_file.c_str());
 	GetPot ifileC(_fileC.c_str());  // common parameters are assignes in commonParams.dat
 
-    // basal Heart Rate
-    T0 = ifile("basalHR/T0", 0.58);
     
     // [commonParams]
-    commonParams[0] = ifileC("cardiovascularControl/rmp0", 2.106);
-    commonParams[1] = ifileC("cardiovascularControl/rsp0", 1.8675);
-    commonParams[2] = ifileC("cardiovascularControl/rep0", 1.24125);    
-    commonParams[3] = ifileC("cardiovascularControl/vumv0", 503.26);
-    commonParams[4] = ifileC("cardiovascularControl/vusv0", 1435.4);
-    commonParams[5] = ifileC("cardiovascularControl/vuev0", 640.73);
-    commonParams[6] = ifileC("cardiovascularControl/emaxlv0", 2.3920);
-    commonParams[7] = ifileC("cardiovascularControl/emaxrv0", 1.412);
-    commonParams[8] = ifileC("cardiovascularControl/rbp0", 6.6667);
-    commonParams[9] = ifileC("cardiovascularControl/rhp0", 19.71);
+    T0 = ifileC("cardiovascular_and_cardiovascularControl/T0", 0.58);
+    commonParams[0] = ifileC("cardiovascular_and_cardiovascularControl/rmp0", 2.106);
+    commonParams[1] = ifileC("cardiovascular_and_cardiovascularControl/rsp0", 1.8675);
+    commonParams[2] = ifileC("cardiovascular_and_cardiovascularControl/rep0", 1.24125);    
+    commonParams[3] = ifileC("cardiovascular_and_cardiovascularControl/vumv0", 503.26);
+    commonParams[4] = ifileC("cardiovascular_and_cardiovascularControl/vusv0", 1435.4);
+    commonParams[5] = ifileC("cardiovascular_and_cardiovascularControl/vuev0", 640.73);
+    commonParams[6] = ifileC("cardiovascular_and_cardiovascularControl/emaxlv0", 2.3920);
+    commonParams[7] = ifileC("cardiovascular_and_cardiovascularControl/emaxrv0", 1.412);
+    commonParams[8] = ifileC("cardiovascular_and_cardiovascularControl/rbp0", 6.6667);
+    commonParams[9] = ifileC("cardiovascular_and_cardiovascularControl/rhp0", 19.71);
 
     // [commonControlParams]
-    commonControlParams[0] = ifileC("cardiorespiratoryControl/paco2n", 40.);
-    commonControlParams[1] = ifileC("cardiorespiratoryControl/caco2n", 0.36);
+    commonControlParams[0] = ifileC("cardiovascularControl_and_cardiorespiratoryControl/paco2n", 40.);
 
     // [brainAutoParams]
-    brainAutoParams[0] = ifile("brainAutoParams/gbpn",0.15);
-    brainAutoParams[1] = ifile("brainAutoParams/gbo2",10.);
-    brainAutoParams[2] = ifile("brainAutoParams/cvbo2n",0.14);
-    brainAutoParams[3] = ifile("brainAutoParams/Ab",20.9);
-    brainAutoParams[4] = ifile("brainAutoParams/Bb",92.8);
-    brainAutoParams[5] = ifile("brainAutoParams/Cb",10570.);
-    brainAutoParams[6] = ifile("brainAutoParams/Db",-5.251);
+    brainAutoParams[0] = ifile("brainAutoParams/gbo2",10.);
+    brainAutoParams[1] = ifile("brainAutoParams/cvbo2n",0.14);
+    brainAutoParams[2] = ifile("brainAutoParams/Ab",20.9);
+    brainAutoParams[3] = ifile("brainAutoParams/Bb",92.8);
+    brainAutoParams[4] = ifile("brainAutoParams/Cb",10570.);
+    brainAutoParams[5] = ifile("brainAutoParams/Db",-5.251);
 
     // [coroAutoParams]
     coromuscleAutoParams[0] = ifile("coroAutoParams/gho2",35.);
@@ -205,6 +202,7 @@ void cardiovascularControl::readCardioControlParameters(string _file, string _fi
     chemoAfferentParams[5] = ifile("chemoAfferentParam/kdyn",45.);
     chemoAfferentParams[6] = ifile("chemoAfferentParam/tauCAP",3.5);
     chemoAfferentParams[7] = ifile("chemoAfferentParam/tauccCO2dyn",600.);
+    chemoAfferentParams[8] = ifile("chemoAfferentParam/caco2n", 0.36);
 
     // [lsrAfferentParam]
     lsrAfferentParams[0] = ifile("lsrAfferentParam/gap",12.);
@@ -341,12 +339,12 @@ void cardiovascularControl::printCardioControlParameters(){
     }    
 
     cout << "[commonControlParams]"<<endl;
-    for (int i = 0; i<2; i++){
+    for (int i = 0; i<1; i++){
         cout << i << " value: " << commonControlParams[i] << endl;
     }    
 
     cout << "[brainAutoParams]"<<endl;
-    for (int i = 0; i<7; i++){
+    for (int i = 0; i<6; i++){
         cout << i << " value: " << brainAutoParams[i] << endl;
     }    
 
@@ -371,7 +369,7 @@ void cardiovascularControl::printCardioControlParameters(){
     }  
 
     cout << "[chemoAfferentParams]"<<endl;
-    for (int i = 0; i<8; i++){
+    for (int i = 0; i<9; i++){
         cout << i << " value: " << chemoAfferentParams[i] << endl;
     }  
 
@@ -416,17 +414,16 @@ void cardiovascularControl::printCardioControlParameters(){
 
 void cardiovascularControl::getAlgebraicRelationsAuto(){
     // [AUTOREGULATION]
-    double Paco2Diff = (varsTransport[0] - commonControlParams[0] );    
+    double Paco2Diff = (varsTransport[0] - commonControlParams[0]);    
     // equivalent to Ursino's model (change of variable)
-    algVarAuto[0] = (1. - brainAutoParams[1] * stateVarAuto[0] + stateVarAuto[1]);
-    algVarAuto[1] = (brainAutoParams[3] + (brainAutoParams[4]) / (1. + brainAutoParams[5] * exp(brainAutoParams[6]*log(varsTransport[0]))) ) 
-                        / (brainAutoParams[3] + (brainAutoParams[4]) / (1. + brainAutoParams[5] * exp(brainAutoParams[6]*log(commonControlParams[0])))) - 1.;
+    algVarAuto[0] = max((1. - brainAutoParams[0] * stateVarAuto[0] + stateVarAuto[1]),0.1);
+    algVarAuto[1] = (brainAutoParams[2] + (brainAutoParams[3]) / (1. + brainAutoParams[4] * exp(brainAutoParams[5]*log10(varsTransport[0]))) ) 
+                        / (brainAutoParams[2] + (brainAutoParams[3]) / (1. + brainAutoParams[4] * exp(brainAutoParams[5]*log10(commonControlParams[0])))) - 1.;
         
-
     for (int i=0; i<2;i++){
         algVarAuto[i+2] = (1. - exp( Paco2Diff / coromuscleAutoParams[i+4] ) )
                          / (1. + exp(Paco2Diff / coromuscleAutoParams[i+4] ) );
-        algVarAuto[i+5] = (1. + stateVarAuto[2*i + 3] ) / (1. - coromuscleAutoParams[i] * stateVarAuto[2*i + 2]);
+        algVarAuto[i+5] = (1. + stateVarAuto[2*i + 3] ) / max((1. - coromuscleAutoParams[i] * stateVarAuto[2*i + 2]),0.1);
     }
 
     algVarAuto[4] = commonParams[8] / algVarAuto[0];
@@ -446,10 +443,10 @@ void cardiovascularControl::getAlgebraicRelationsBaro(){
 void cardiovascularControl::getAlgebraicRelationsChemo(){
     // [CHEMOREFLEX]
     algVarChemo[0] = chemoAfferentParams[0] * (1. - varsTransport[2]) + chemoAfferentParams[1];
-    algVarChemo[1] = chemoAfferentParams[2] * (varsTransport[3] - commonControlParams[1]) 
+    algVarChemo[1] = chemoAfferentParams[2] * (varsTransport[3] - chemoAfferentParams[8]) 
                         * chemoAfferentParams[3] * (1. - exp(-algVarChemo[0] / chemoAfferentParams[3]));
     
-    if (varsTransport[3] > commonControlParams[1]){
+    if (varsTransport[3] > chemoAfferentParams[8]){
         algVarChemo[2] = chemoAfferentParams[4] * (1. - exp(-algVarChemo[1] / chemoAfferentParams[4]));
     }else{
         algVarChemo[2] = 0.;
@@ -495,7 +492,7 @@ void cardiovascularControl::getAlgebraicRelationsSVResponse(){
     // Is it correct? I cannot figure where the python implementation comes from
     for (int i = 0; i < 3; i++){
         algVarSVResponse[i] = resControlParams[i] * log(max(delayedVars[i] - resControlParams[6] + 1., 1.));
-        algVarSVResponse[i+3] = resControlParams[i] * log(max(delayedVars[i+3] - resControlParams[6] + 1., 1.));
+        algVarSVResponse[i+3] = vuControlParams[i] * log(max(delayedVars[i+3] - resControlParams[6] + 1., 1.));
     }
     
     algVarSVResponse[6] = heartControlParams[0] * log(max(delayedVars[6] - resControlParams[6] + 1. , 1.));
@@ -525,7 +522,7 @@ void cardiovascularControl::getTimeDerivativeAuto(){
     }
 
 
-    dstateVarAuto[0] = 1/commonAutoParams[0] * (-stateVarAuto[0] + (varsTransport[4] - brainAutoParams[2]));
+    dstateVarAuto[0] = 1/commonAutoParams[0] * (-stateVarAuto[0] + (varsTransport[4] - brainAutoParams[1]));
     dstateVarAuto[2] = 1/commonAutoParams[0] * (-stateVarAuto[2] + (varsTransport[5] - coromuscleAutoParams[2]));
     dstateVarAuto[4] = 1/commonAutoParams[0] * (-stateVarAuto[4] + (varsTransport[6] - coromuscleAutoParams[3]));
 }
