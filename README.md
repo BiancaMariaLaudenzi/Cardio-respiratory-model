@@ -40,7 +40,7 @@ Sources:
     *    response to O2 and CO2 pressure changes. Respiratory Physiology & Neurobiology, 130(1):99–110, March 2002.
 
 ## Changes
-The changes with respect to the previous version are listed in `CHANGES.txt`.
+The changes with respect to the previous version v1.1.0 are listed in `CHANGES.txt`.
 
 ## Directory structure
 
